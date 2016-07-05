@@ -246,11 +246,57 @@ Function Set-VMRamAmount{
 	}
 }
 
+Function Add-VMDIsk{
+  $VM = Get-VM -Server $Global:VMCreationSelections.VCenterServer `
+				 -Location $Global:VMCreationSelections.Location `
+				 -Name $Global:VMCreationSelections.Name
+  
+  New-HardDisk -VM $VM -CapacityGB $DiskSize -DataStore $DataStore -Confirm $False -DiskPath $Path -Server $Server -StorageFormat Thin
+}
+
 function Control-VisibleExtraDrives{
 	
 	switch ($Global:DriveCounter)
 	{
-		1 {
+		0 {
+            #ED1
+			$ExtraDrive1_DataStoreComboBox.visible = $false
+			$ExtraDrive1_letterComboBox.visible = $false
+			$ExtraDrive1_SelectionLabel.visible = $false
+			$ExtraDrive1SizeTextBox.visible = $false
+			$ExtraDrive1_SizeLabel.visible = $false
+			$ExtraDrive1_DatastoreLabel.visible = $false
+			#ED2
+			$ExtraDrive2_DataStoreComboBox.visible = $false
+			$ExtraDrive2_letterComboBox.visible = $false
+			$ExtraDrive2_SelectionLabel.visible = $false
+			$ExtraDrive2SizeTextBox.visible = $false
+			$ExtraDrive2_SizeLabel.visible = $false
+			$ExtraDrive2_DatastoreLabel.visible = $false
+			#ED3
+			$ExtraDrive3_DataStoreComboBox.visible = $false
+			$ExtraDrive3_letterComboBox.visible = $false
+			$ExtraDrive3_SelectionLabel.visible = $false
+			$ExtraDrive3SizeTextBox.visible = $false
+			$ExtraDrive3_SizeLabel.visible = $false
+			$ExtraDrive3_DatastoreLabel.visible = $false
+			#ED4
+			$ExtraDrive4_DataStoreComboBox.visible = $false
+			$ExtraDrive4_letterComboBox.visible = $false
+			$ExtraDrive4_SelectionLabel.visible = $false
+			$ExtraDrive4SizeTextBox.visible = $false
+			$ExtraDrive4_SizeLabel.visible = $false
+			$ExtraDrive4_DatastoreLabel.visible = $false
+			#ED5
+			$ExtraDrive5_DataStoreComboBox.visible = $false
+			$ExtraDrive5_letterComboBox.visible = $false
+			$ExtraDrive5_SelectionLabel.visible = $false
+			$ExtraDrive5SizeTextBox.visible = $false
+			$ExtraDrive5_SizeLabel.visible = $false
+			$ExtraDrive5_DatastoreLabel.visible = $false
+
+        }
+        1 {
 			#ED1
 			$ExtraDrive1_DataStoreComboBox.visible = $true
 			$ExtraDrive1_letterComboBox.visible = $true
@@ -506,8 +552,6 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Declare Form Objects
-
 	#region Global Selection Storage Variables
 	
 	$Global:VMCreationSelections = New-Object –TypeName PSObject
@@ -540,6 +584,15 @@ Function Build-Form {
 	$VMnameInputBoxLabel            = New-Object System.Windows.Forms.label
 	$SeperatorLine1      	 		= New-Object System.Windows.Forms.label
 	$SeperatorLine2 				= New-Object System.Windows.Forms.label
+    $SeperatorLine3                 = New-Object System.Windows.Forms.label
+    $SeperatorLine4                 = New-Object System.Windows.Forms.label
+    $SeperatorLine5                 = New-Object System.Windows.Forms.label
+    $SeperatorLine6                 = New-Object System.Windows.Forms.label
+    $SeperatorLine7                 = New-Object System.Windows.Forms.label
+    $SeperatorLine8                 = New-Object System.Windows.Forms.label
+    $SeperatorLine9                 = New-Object System.Windows.Forms.label
+    $SeperatorLine10                = New-Object System.Windows.Forms.label
+    $SeperatorLine11                = New-Object System.Windows.Forms.label
 	$VCPUsSelectionLabel 		    = New-Object System.Windows.Forms.label
 	$RAMSelectionLabel 				= New-Object System.Windows.Forms.label
 	$ExtraDrive1_SelectionLabel 	= New-Object System.Windows.Forms.label
@@ -583,6 +636,7 @@ Function Build-Form {
 	
     #region Buttons
 	$CreateVMButton 				= New-Object System.Windows.Forms.Button
+    $ConfigureVMButton              = New-Object System.Windows.Forms.Button
 	$IncrementDrivesButton 			= New-Object System.Windows.Forms.Button
 	$DecrementDrivesButton 			= New-Object System.Windows.Forms.Button
 	#endregion
@@ -603,8 +657,6 @@ Function Build-Form {
 	
 	#endregion
 	
-    #endregion
-
     #region Event Handlers
 	
 	$ServerSelectionMade = {
@@ -959,8 +1011,8 @@ Function Build-Form {
 	#region Logging Rich Text Box
 	
 	$richtextbox1 = New-Object 'System.Windows.Forms.RichTextBox'
-	$richtextbox1.Location = '5, 550'
-	$richtextbox1.Size ='1009, 280'
+	$richtextbox1.Location = '5, 650'
+	$richtextbox1.Size ='1009, 180'
 	$richtextbox1.Name = "Logging Box"
 	$richtextbox1.TabIndex = 0
 	$richtextbox1.Text = ""
@@ -978,18 +1030,18 @@ Function Build-Form {
     $CreateVMButton.DataBindings.DefaultDataSourceUpdateMode = 0
     $CreateVMButton.Name = 'DGVSubmit'
     $CreateVMButton.Size = "100,50"
-    $CreateVMButton.Location = "5,375"
+    $CreateVMButton.Location = "5,480"
     $CreateVMButton.Enabled = $False
     $CreateVMButton.add_Click($CreateVMButton_Click)
     $form.Controls.Add($CreateVMButton)
 	
 	#endregion
 	
-	#region Seperator Line 1
+	#region Seperator Vertical Line 1
 	
 	$SeperatorLine1.Location = '365, 0' #L/R, U/D
 	$SeperatorLine1.Name = 'VCenter Selection Label'
-	$SeperatorLine1.Size = '2, 500' #L/R, U/D
+	$SeperatorLine1.Size = '2, 650' #L/R, U/D
 	$SeperatorLine1.TabIndex = 0
 	$SeperatorLine1.Text = ''
 	$SeperatorLine1.Enabled = $true
@@ -999,17 +1051,143 @@ Function Build-Form {
 	
 	#endregion
 	
-	#region Seperator Line 2
+	#region Seperator Vertical Line 2
 	
 	$SeperatorLine2.Location = '800, 0' #L/R, U/D
 	$SeperatorLine2.Name = 'VCenter Selection Label'
-	$SeperatorLine2.Size = '2, 500' #L/R, U/D
+	$SeperatorLine2.Size = '2, 650' #L/R, U/D
 	$SeperatorLine2.TabIndex = 0
 	$SeperatorLine2.Text = ''
 	$SeperatorLine2.Enabled = $true
 	$SeperatorLine2.BorderStyle = 'Fixed3D'
 	$SeperatorLine2.AutoSize = $false
 	$form.Controls.Add($SeperatorLine2)
+	
+	#endregion
+
+	#region Seperator Horizontal Line 3
+	
+	$SeperatorLine3.Location = '0, 55' #L/R, U/D
+	$SeperatorLine3.Name = 'VCenter Selection Label'
+	$SeperatorLine3.Size = '800, 2' #L/R, U/D
+	$SeperatorLine3.TabIndex = 0
+	$SeperatorLine3.Text = ''
+	$SeperatorLine3.Enabled = $true
+	$SeperatorLine3.BorderStyle = 'Fixed3D'
+	$SeperatorLine3.AutoSize = $false
+	$form.Controls.Add($SeperatorLine3)
+	
+	#endregion
+
+	#region Seperator Vertical Line 4
+	
+	$SeperatorLine4.Location = '0, 105' #L/R, U/D
+	$SeperatorLine4.Name = 'VCenter Selection Label'
+	$SeperatorLine4.Size = '800, 2' #L/R, U/D
+	$SeperatorLine4.TabIndex = 0
+	$SeperatorLine4.Text = ''
+	$SeperatorLine4.Enabled = $true
+	$SeperatorLine4.BorderStyle = 'Fixed3D'
+	$SeperatorLine4.AutoSize = $false
+	$form.Controls.Add($SeperatorLine4)
+	
+	#endregion
+
+	#region Seperator Vertical Line 5
+	
+	$SeperatorLine5.Location = '0, 155' #L/R, U/D
+	$SeperatorLine5.Name = 'VCenter Selection Label'
+	$SeperatorLine5.Size = '365, 2' #L/R, U/D
+	$SeperatorLine5.TabIndex = 0
+	$SeperatorLine5.Text = ''
+	$SeperatorLine5.Enabled = $true
+	$SeperatorLine5.BorderStyle = 'Fixed3D'
+	$SeperatorLine5.AutoSize = $false
+	$form.Controls.Add($SeperatorLine5)
+	
+	#endregion
+
+	#region Seperator Vertical Line 6
+	
+	$SeperatorLine6.Location = '0, 205' #L/R, U/D
+	$SeperatorLine6.Name = 'VCenter Selection Label'
+	$SeperatorLine6.Size = '800, 2' #L/R, U/D
+	$SeperatorLine6.TabIndex = 0
+	$SeperatorLine6.Text = ''
+	$SeperatorLine6.Enabled = $true
+	$SeperatorLine6.BorderStyle = 'Fixed3D'
+	$SeperatorLine6.AutoSize = $false
+	$form.Controls.Add($SeperatorLine6)
+	
+	#endregion
+
+	#region Seperator Vertical Line 7
+	
+	$SeperatorLine7.Location = '0, 255' #L/R, U/D
+	$SeperatorLine7.Name = 'VCenter Selection Label'
+	$SeperatorLine7.Size = '800, 2' #L/R, U/D
+	$SeperatorLine7.TabIndex = 0
+	$SeperatorLine7.Text = ''
+	$SeperatorLine7.Enabled = $true
+	$SeperatorLine7.BorderStyle = 'Fixed3D'
+	$SeperatorLine7.AutoSize = $false
+	$form.Controls.Add($SeperatorLine7)
+	
+	#endregion
+
+	#region Seperator Vertical Line 8
+	
+	$SeperatorLine8.Location = '0, 305' #L/R, U/D
+	$SeperatorLine8.Name = 'VCenter Selection Label'
+	$SeperatorLine8.Size = '800, 2' #L/R, U/D
+	$SeperatorLine8.TabIndex = 0
+	$SeperatorLine8.Text = ''
+	$SeperatorLine8.Enabled = $true
+	$SeperatorLine8.BorderStyle = 'Fixed3D'
+	$SeperatorLine8.AutoSize = $false
+	$form.Controls.Add($SeperatorLine8)
+	
+	#endregion
+
+	#region Seperator Vertical Line 9
+	
+	$SeperatorLine9.Location = '0, 355' #L/R, U/D
+	$SeperatorLine9.Name = 'VCenter Selection Label'
+	$SeperatorLine9.Size = '800, 2' #L/R, U/D
+	$SeperatorLine9.TabIndex = 0
+	$SeperatorLine9.Text = ''
+	$SeperatorLine9.Enabled = $true
+	$SeperatorLine9.BorderStyle = 'Fixed3D'
+	$SeperatorLine9.AutoSize = $false
+	$form.Controls.Add($SeperatorLine9)
+	
+	#endregion
+
+	#region Seperator Vertical Line 10
+	
+	$SeperatorLine10.Location = '365, 405' #L/R, U/D
+	$SeperatorLine10.Name = 'VCenter Selection Label'
+	$SeperatorLine10.Size = '435, 2' #L/R, U/D
+	$SeperatorLine10.TabIndex = 0
+	$SeperatorLine10.Text = ''
+	$SeperatorLine10.Enabled = $true
+	$SeperatorLine10.BorderStyle = 'Fixed3D'
+	$SeperatorLine10.AutoSize = $false
+	$form.Controls.Add($SeperatorLine10)
+	
+	#endregion
+
+	#region Seperator Vertical Line 11
+	
+	$SeperatorLine11.Location = '365, 455' #L/R, U/D
+	$SeperatorLine11.Name = 'VCenter Selection Label'
+	$SeperatorLine11.Size = '435, 2' #L/R, U/D
+	$SeperatorLine11.TabIndex = 0
+	$SeperatorLine11.Text = ''
+	$SeperatorLine11.Enabled = $true
+	$SeperatorLine11.BorderStyle = 'Fixed3D'
+	$SeperatorLine11.AutoSize = $false
+	$form.Controls.Add($SeperatorLine11)
 	
 	#endregion
 	
@@ -1073,7 +1251,7 @@ Function Build-Form {
 	
 	$DriveInfoTextBox = New-Object System.Windows.Forms.TextBox
 	$DriveInfoTextBox.Location = New-Object System.Drawing.Size(370, 110)
-	$DriveInfoTextBox.Size = New-Object System.Drawing.Size(200, 100)
+	$DriveInfoTextBox.Size = New-Object System.Drawing.Size(200, 80)
 	$DriveInfoTextBox.Enabled = $True
 	$DriveInfoTextBox.ReadOnly = $True
 	$DriveInfoTextBox.Text = "The C, D, and P drives will be created by default. Please choose how many extra drives you need for this vm."
@@ -1090,7 +1268,7 @@ Function Build-Form {
 	$IncrementDrivesButton.Font = "Times New Roman,14"
 	$IncrementDrivesButton.DataBindings.DefaultDataSourceUpdateMode = 0
 	$IncrementDrivesButton.Name = 'DGVSubmit'
-	$IncrementDrivesButton.Size = "40,40"
+	$IncrementDrivesButton.Size = "38,38"
 	$IncrementDrivesButton.Location = "680,110"
 	$IncrementDrivesButton.Enabled = $True
 	$IncrementDrivesButton.add_Click($IncrementDrivesButton_Click)
@@ -1105,8 +1283,8 @@ Function Build-Form {
 	$DecrementDrivesButton.Font = "Times New Roman,14"
 	$DecrementDrivesButton.DataBindings.DefaultDataSourceUpdateMode = 0
 	$DecrementDrivesButton.Name = 'DGVSubmit'
-	$DecrementDrivesButton.Size = "40,40"
-	$DecrementDrivesButton.Location = "680,160"
+	$DecrementDrivesButton.Size = "38,38"
+	$DecrementDrivesButton.Location = "680,150"
 	$DecrementDrivesButton.Enabled = $True
 	$DecrementDrivesButton.add_Click($DecrementDrivesButton_Click)
 	$form.Controls.Add($DecrementDrivesButton)
@@ -1128,7 +1306,7 @@ Function Build-Form {
 	
 	#region Extra Drives Letter ComboBoxes
 
-	$ExtraDrive1_letterComboBox.Location = "370, 240"
+	$ExtraDrive1_letterComboBox.Location = "370, 225"
 	$ExtraDrive1_letterComboBox.Size = "50, 20"
 	$ExtraDrive1_letterComboBox.Font = "Times New Roman,12"
 	$ExtraDrive1_letterComboBox.Visible = $False
@@ -1136,7 +1314,7 @@ Function Build-Form {
 	$ExtraDrive1_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive1_letterComboBox)
 
-	$ExtraDrive2_letterComboBox.Location = "370, 290"
+	$ExtraDrive2_letterComboBox.Location = "370, 275"
 	$ExtraDrive2_letterComboBox.Size = "50, 20"
 	$ExtraDrive2_letterComboBox.Font = "Times New Roman,12"
 	$ExtraDrive2_letterComboBox.Visible = $False
@@ -1144,7 +1322,7 @@ Function Build-Form {
 	$ExtraDrive2_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive2_letterComboBox)
 	
-	$ExtraDrive3_letterComboBox.Location = "370, 340"
+	$ExtraDrive3_letterComboBox.Location = "370, 325"
 	$ExtraDrive3_letterComboBox.Size = "50, 20"
 	$ExtraDrive3_letterComboBox.Font = "Times New Roman,12"
 	$ExtraDrive3_letterComboBox.Visible = $False
@@ -1152,7 +1330,7 @@ Function Build-Form {
 	$ExtraDrive3_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive3_letterComboBox)
 	
-	$ExtraDrive4_letterComboBox.Location = "370, 390"
+	$ExtraDrive4_letterComboBox.Location = "370, 375"
 	$ExtraDrive4_letterComboBox.Size = "50, 20"
 	$ExtraDrive4_letterComboBox.Font = "Times New Roman,12"
 	$ExtraDrive4_letterComboBox.Visible = $False
@@ -1160,7 +1338,7 @@ Function Build-Form {
 	$ExtraDrive4_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive4_letterComboBox)
 	
-	$ExtraDrive5_letterComboBox.Location = "370, 440"
+	$ExtraDrive5_letterComboBox.Location = "370, 425"
 	$ExtraDrive5_letterComboBox.Size = "50, 20"
 	$ExtraDrive5_letterComboBox.Font = "Times New Roman,12"
 	$ExtraDrive5_letterComboBox.Visible = $False
@@ -1172,7 +1350,7 @@ Function Build-Form {
 	
 	#region Extra Drives Selection Labels
 
-	$ExtraDrive1_SelectionLabel.Location = '370, 220' #L/R, U/D
+	$ExtraDrive1_SelectionLabel.Location = '370, 210' #L/R, U/D
 	$ExtraDrive1_SelectionLabel.Name = 'VCenter Selection Label'
 	$ExtraDrive1_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive1_SelectionLabel.TabIndex = 0
@@ -1180,7 +1358,7 @@ Function Build-Form {
 	$ExtraDrive1_SelectionLabel.Visible = $False
 	$form.Controls.Add($ExtraDrive1_SelectionLabel)
 	
-	$ExtraDrive2_SelectionLabel.Location = '370, 270' #L/R, U/D
+	$ExtraDrive2_SelectionLabel.Location = '370, 260' #L/R, U/D
 	$ExtraDrive2_SelectionLabel.Name = 'VCenter Selection Label'
 	$ExtraDrive2_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive2_SelectionLabel.TabIndex = 0
@@ -1188,7 +1366,7 @@ Function Build-Form {
 	$ExtraDrive2_SelectionLabel.Visible = $False
 	$form.Controls.Add($ExtraDrive2_SelectionLabel)
 	
-	$ExtraDrive3_SelectionLabel.Location = '370, 320' #L/R, U/D
+	$ExtraDrive3_SelectionLabel.Location = '370, 310' #L/R, U/D
 	$ExtraDrive3_SelectionLabel.Name = 'VCenter Selection Label'
 	$ExtraDrive3_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive3_SelectionLabel.TabIndex = 0
@@ -1196,7 +1374,7 @@ Function Build-Form {
 	$ExtraDrive3_SelectionLabel.Visible = $False
 	$form.Controls.Add($ExtraDrive3_SelectionLabel)
 	
-	$ExtraDrive4_SelectionLabel.Location = '370, 370' #L/R, U/D
+	$ExtraDrive4_SelectionLabel.Location = '370, 360' #L/R, U/D
 	$ExtraDrive4_SelectionLabel.Name = 'VCenter Selection Label'
 	$ExtraDrive4_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive4_SelectionLabel.TabIndex = 0
@@ -1204,7 +1382,7 @@ Function Build-Form {
 	$ExtraDrive4_SelectionLabel.Visible = $False
 	$form.Controls.Add($ExtraDrive4_SelectionLabel)
 	
-	$ExtraDrive5_SelectionLabel.Location = '370, 420' #L/R, U/D
+	$ExtraDrive5_SelectionLabel.Location = '370, 410' #L/R, U/D
 	$ExtraDrive5_SelectionLabel.Name = 'VCenter Selection Label'
 	$ExtraDrive5_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive5_SelectionLabel.TabIndex = 0
@@ -1215,27 +1393,27 @@ Function Build-Form {
 	#endregion
 	
 	#region Extra Drives Size TextBoxes
-	$ExtraDrive1SizeTextBox.Location = New-Object System.Drawing.Size(460, 240)
+	$ExtraDrive1SizeTextBox.Location = New-Object System.Drawing.Size(460, 225)
 	$ExtraDrive1SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
 	$ExtraDrive1SizeTextBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive1SizeTextBox)
 	
-	$ExtraDrive2SizeTextBox.Location = New-Object System.Drawing.Size(460, 290)
+	$ExtraDrive2SizeTextBox.Location = New-Object System.Drawing.Size(460, 275)
 	$ExtraDrive2SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
 	$ExtraDrive2SizeTextBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive2SizeTextBox)
 	
-	$ExtraDrive3SizeTextBox.Location = New-Object System.Drawing.Size(460, 340)
+	$ExtraDrive3SizeTextBox.Location = New-Object System.Drawing.Size(460, 325)
 	$ExtraDrive3SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
 	$ExtraDrive3SizeTextBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive3SizeTextBox)
 	
-	$ExtraDrive4SizeTextBox.Location = New-Object System.Drawing.Size(460, 390)
+	$ExtraDrive4SizeTextBox.Location = New-Object System.Drawing.Size(460, 375)
 	$ExtraDrive4SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
 	$ExtraDrive4SizeTextBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive4SizeTextBox)
 	
-	$ExtraDrive5SizeTextBox.Location = New-Object System.Drawing.Size(460, 440)
+	$ExtraDrive5SizeTextBox.Location = New-Object System.Drawing.Size(460, 425)
 	$ExtraDrive5SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
 	$ExtraDrive5SizeTextBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive5SizeTextBox)
@@ -1244,7 +1422,7 @@ Function Build-Form {
 	
 	#region Extra Drives Size Labels
 	
-	$ExtraDrive1_SizeLabel.Location = '460, 220'
+	$ExtraDrive1_SizeLabel.Location = '460, 210'
 	$ExtraDrive1_SizeLabel.Name = 'Extra Drives Size Label'
 	$ExtraDrive1_SizeLabel.Size = '80, 20'
 	$ExtraDrive1_SizeLabel.Text = 'Size (GB)'
@@ -1252,26 +1430,26 @@ Function Build-Form {
 	$ExtraDrive1_SizeLabel.TabIndex = 0
 	$form.Controls.Add($ExtraDrive1_SizeLabel)
 	
-	$ExtraDrive2_SizeLabel.Location = '460, 270'
+	$ExtraDrive2_SizeLabel.Location = '460, 260'
 	$ExtraDrive2_SizeLabel.Size = '80, 20'
 	$ExtraDrive2_SizeLabel.Text = 'Size (GB)'
 	$ExtraDrive2_SizeLabel.Visible = $False
 	$Form.Controls.Add($ExtraDrive2_SizeLabel)
 	
 
-	$ExtraDrive3_SizeLabel.Location = '460, 320'
+	$ExtraDrive3_SizeLabel.Location = '460, 310'
 	$ExtraDrive3_SizeLabel.Size = '80, 20'
 	$ExtraDrive3_SizeLabel.Text = 'Size (GB)'
 	$ExtraDrive3_SizeLabel.Visible = $False
 	$Form.Controls.Add($ExtraDrive3_SizeLabel)
 	
-	$ExtraDrive4_SizeLabel.Location = '460, 370'
+	$ExtraDrive4_SizeLabel.Location = '460, 360'
 	$ExtraDrive4_SizeLabel.Size = '80, 20'
 	$ExtraDrive4_SizeLabel.Text = 'Size (GB)'
 	$ExtraDrive4_SizeLabel.Visible = $False
 	$Form.Controls.Add($ExtraDrive4_SizeLabel)
 	
-	$ExtraDrive5_SizeLabel.Location = '460, 420'
+	$ExtraDrive5_SizeLabel.Location = '460, 410'
 	$ExtraDrive5_SizeLabel.Size = '80, 20'
 	$ExtraDrive5_SizeLabel.Text = 'Size (GB)'
 	$ExtraDrive5_SizeLabel.Visible = $False
@@ -1279,9 +1457,9 @@ Function Build-Form {
 	
 	#endregion
 	
-	#region Extra Drives Size Labels
+	#region Extra Drives Datastore Labels
 	
-	$ExtraDrive1_DatastoreLabel.Location = '560, 220'
+	$ExtraDrive1_DatastoreLabel.Location = '560, 210'
 	$ExtraDrive1_DatastoreLabel.Name = 'Extra Drives Size Label'
 	$ExtraDrive1_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive1_DatastoreLabel.Text = 'Datastore'
@@ -1289,25 +1467,25 @@ Function Build-Form {
 	$ExtraDrive1_DatastoreLabel.TabIndex = 0
 	$form.Controls.Add($ExtraDrive1_DatastoreLabel)
 	
-	$ExtraDrive2_DatastoreLabel.Location = '560, 270'
+	$ExtraDrive2_DatastoreLabel.Location = '560, 260'
 	$ExtraDrive2_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive2_DatastoreLabel.Text = 'Datastore'
 	$ExtraDrive2_DatastoreLabel.Visible = $False
 	$Form.Controls.Add($ExtraDrive2_DatastoreLabel)
 	
-	$ExtraDrive3_DatastoreLabel.Location = '560, 320'
+	$ExtraDrive3_DatastoreLabel.Location = '560, 310'
 	$ExtraDrive3_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive3_DatastoreLabel.Text = 'Datastore'
 	$ExtraDrive3_DatastoreLabel.Visible = $False
 	$Form.Controls.Add($ExtraDrive3_DatastoreLabel)
 	
-	$ExtraDrive4_DatastoreLabel.Location = '560, 370'
+	$ExtraDrive4_DatastoreLabel.Location = '560, 360'
 	$ExtraDrive4_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive4_DatastoreLabel.Text = 'Datastore'
 	$ExtraDrive4_DatastoreLabel.Visible = $False
 	$Form.Controls.Add($ExtraDrive4_DatastoreLabel)
 	
-	$ExtraDrive5_DatastoreLabel.Location = '560, 420'
+	$ExtraDrive5_DatastoreLabel.Location = '560, 410'
 	$ExtraDrive5_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive5_DatastoreLabel.Text = 'Datastore'
 	$ExtraDrive5_DatastoreLabel.Visible = $False
@@ -1315,37 +1493,51 @@ Function Build-Form {
 	
 	#endregion
 	
-	#region Extra Drives Letter ComboBoxes
+	#region Extra Drives Datastore ComboBoxes
 	
-	$ExtraDrive1_DataStoreComboBox.Location = "560, 240"
+	$ExtraDrive1_DataStoreComboBox.Location = "560, 225"
 	$ExtraDrive1_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive1_DataStoreComboBox.Font = "Times New Roman,12"
 	$ExtraDrive1_DataStoreComboBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive1_DataStoreComboBox)
 	
-	$ExtraDrive2_DataStoreComboBox.Location = "560, 290"
+	$ExtraDrive2_DataStoreComboBox.Location = "560, 275"
 	$ExtraDrive2_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive2_DataStoreComboBox.Font = "Times New Roman,12"
 	$ExtraDrive2_DataStoreComboBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive2_DataStoreComboBox)
 	
-	$ExtraDrive3_DataStoreComboBox.Location = "560, 340"
+	$ExtraDrive3_DataStoreComboBox.Location = "560, 325"
 	$ExtraDrive3_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive3_DataStoreComboBox.Font = "Times New Roman,12"
 	$ExtraDrive3_DataStoreComboBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive3_DataStoreComboBox)
 	
-	$ExtraDrive4_DataStoreComboBox.Location = "560, 390"
+	$ExtraDrive4_DataStoreComboBox.Location = "560, 375"
 	$ExtraDrive4_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive4_DataStoreComboBox.Font = "Times New Roman,12"
 	$ExtraDrive4_DataStoreComboBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive4_DataStoreComboBox)
 	
-	$ExtraDrive5_DataStoreComboBox.Location = "560, 440"
+	$ExtraDrive5_DataStoreComboBox.Location = "560, 425"
 	$ExtraDrive5_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive5_DataStoreComboBox.Font = "Times New Roman,12"
 	$ExtraDrive5_DataStoreComboBox.Visible = $False
 	$Form.Controls.Add($ExtraDrive5_DataStoreComboBox)
+	
+	#endregion
+
+    #region Configure VM Button
+    
+    $ConfigureVMButton.UseVisualStyleBackColor = $True
+    $ConfigureVMButton.Text = 'Configure VM'
+    $ConfigureVMButton.DataBindings.DefaultDataSourceUpdateMode = 0
+    $ConfigureVMButton.Name = 'VMConfig'
+    $ConfigureVMButton.Size = "100,50"
+    $ConfigureVMButton.Location = "370,480"
+    $ConfigureVMButton.Enabled = $False
+    $ConfigureVMButton.add_Click($ConfigureVMButton_Click)
+    $form.Controls.Add($ConfigureVMButton)
 	
 	#endregion
 		
