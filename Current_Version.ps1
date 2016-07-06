@@ -260,226 +260,226 @@ function Control-VisibleExtraDrives{
 	{
 		0 {
             #ED1
-			$ExtraDrive1_DataStoreComboBox.visible = $false
-			$ExtraDrive1_letterComboBox.visible = $false
-			$ExtraDrive1_SelectionLabel.visible = $false
-			$ExtraDrive1SizeTextBox.visible = $false
-			$ExtraDrive1_SizeLabel.visible = $false
-			$ExtraDrive1_DatastoreLabel.visible = $false
+			$ExtraDrive1_DataStoreComboBox.enabled = $false
+			$ExtraDrive1_letterComboBox.enabled = $false
+			$ExtraDrive1_SelectionLabel.enabled = $false
+			$ExtraDrive1SizeTextBox.enabled = $false
+			$ExtraDrive1_SizeLabel.enabled = $false
+			$ExtraDrive1_DatastoreLabel.enabled = $false
 			#ED2
-			$ExtraDrive2_DataStoreComboBox.visible = $false
-			$ExtraDrive2_letterComboBox.visible = $false
-			$ExtraDrive2_SelectionLabel.visible = $false
-			$ExtraDrive2SizeTextBox.visible = $false
-			$ExtraDrive2_SizeLabel.visible = $false
-			$ExtraDrive2_DatastoreLabel.visible = $false
+			$ExtraDrive2_DataStoreComboBox.enabled = $false
+			$ExtraDrive2_letterComboBox.enabled = $false
+			$ExtraDrive2_SelectionLabel.enabled = $false
+			$ExtraDrive2SizeTextBox.enabled = $false
+			$ExtraDrive2_SizeLabel.enabled = $false
+			$ExtraDrive2_DatastoreLabel.enabled = $false
 			#ED3
-			$ExtraDrive3_DataStoreComboBox.visible = $false
-			$ExtraDrive3_letterComboBox.visible = $false
-			$ExtraDrive3_SelectionLabel.visible = $false
-			$ExtraDrive3SizeTextBox.visible = $false
-			$ExtraDrive3_SizeLabel.visible = $false
-			$ExtraDrive3_DatastoreLabel.visible = $false
+			$ExtraDrive3_DataStoreComboBox.enabled = $false
+			$ExtraDrive3_letterComboBox.enabled = $false
+			$ExtraDrive3_SelectionLabel.enabled = $false
+			$ExtraDrive3SizeTextBox.enabled = $false
+			$ExtraDrive3_SizeLabel.enabled = $false
+			$ExtraDrive3_DatastoreLabel.enabled = $false
 			#ED4
-			$ExtraDrive4_DataStoreComboBox.visible = $false
-			$ExtraDrive4_letterComboBox.visible = $false
-			$ExtraDrive4_SelectionLabel.visible = $false
-			$ExtraDrive4SizeTextBox.visible = $false
-			$ExtraDrive4_SizeLabel.visible = $false
-			$ExtraDrive4_DatastoreLabel.visible = $false
+			$ExtraDrive4_DataStoreComboBox.enabled = $false
+			$ExtraDrive4_letterComboBox.enabled = $false
+			$ExtraDrive4_SelectionLabel.enabled = $false
+			$ExtraDrive4SizeTextBox.enabled = $false
+			$ExtraDrive4_SizeLabel.enabled = $false
+			$ExtraDrive4_DatastoreLabel.enabled = $false
 			#ED5
-			$ExtraDrive5_DataStoreComboBox.visible = $false
-			$ExtraDrive5_letterComboBox.visible = $false
-			$ExtraDrive5_SelectionLabel.visible = $false
-			$ExtraDrive5SizeTextBox.visible = $false
-			$ExtraDrive5_SizeLabel.visible = $false
-			$ExtraDrive5_DatastoreLabel.visible = $false
+			$ExtraDrive5_DataStoreComboBox.enabled = $false
+			$ExtraDrive5_letterComboBox.enabled = $false
+			$ExtraDrive5_SelectionLabel.enabled = $false
+			$ExtraDrive5SizeTextBox.enabled = $false
+			$ExtraDrive5_SizeLabel.enabled = $false
+			$ExtraDrive5_DatastoreLabel.enabled = $false
 
         }
         1 {
 			#ED1
-			$ExtraDrive1_DataStoreComboBox.visible = $true
-			$ExtraDrive1_letterComboBox.visible = $true
-			$ExtraDrive1_SelectionLabel.visible = $true
-			$ExtraDrive1SizeTextBox.visible = $true
-			$ExtraDrive1_SizeLabel.visible = $true
-			$ExtraDrive1_DatastoreLabel.visible = $true
+			$ExtraDrive1_DataStoreComboBox.enabled = $true
+			$ExtraDrive1_letterComboBox.enabled = $true
+			$ExtraDrive1_SelectionLabel.enabled = $true
+			$ExtraDrive1SizeTextBox.enabled = $true
+			$ExtraDrive1_SizeLabel.enabled = $true
+			$ExtraDrive1_DatastoreLabel.enabled = $true
 			#ED2
-			$ExtraDrive2_DataStoreComboBox.visible = $false
-			$ExtraDrive2_letterComboBox.visible = $false
-			$ExtraDrive2_SelectionLabel.visible = $false
-			$ExtraDrive2SizeTextBox.visible = $false
-			$ExtraDrive2_SizeLabel.visible = $false
-			$ExtraDrive2_DatastoreLabel.visible = $false
+			$ExtraDrive2_DataStoreComboBox.enabled = $false
+			$ExtraDrive2_letterComboBox.enabled = $false
+			$ExtraDrive2_SelectionLabel.enabled = $false
+			$ExtraDrive2SizeTextBox.enabled = $false
+			$ExtraDrive2_SizeLabel.enabled = $false
+			$ExtraDrive2_DatastoreLabel.enabled = $false
 			#ED3
-			$ExtraDrive3_DataStoreComboBox.visible = $false
-			$ExtraDrive3_letterComboBox.visible = $false
-			$ExtraDrive3_SelectionLabel.visible = $false
-			$ExtraDrive3SizeTextBox.visible = $false
-			$ExtraDrive3_SizeLabel.visible = $false
-			$ExtraDrive3_DatastoreLabel.visible = $false
+			$ExtraDrive3_DataStoreComboBox.enabled = $false
+			$ExtraDrive3_letterComboBox.enabled = $false
+			$ExtraDrive3_SelectionLabel.enabled = $false
+			$ExtraDrive3SizeTextBox.enabled = $false
+			$ExtraDrive3_SizeLabel.enabled = $false
+			$ExtraDrive3_DatastoreLabel.enabled = $false
 			#ED4
-			$ExtraDrive4_DataStoreComboBox.visible = $false
-			$ExtraDrive4_letterComboBox.visible = $false
-			$ExtraDrive4_SelectionLabel.visible = $false
-			$ExtraDrive4SizeTextBox.visible = $false
-			$ExtraDrive4_SizeLabel.visible = $false
-			$ExtraDrive4_DatastoreLabel.visible = $false
+			$ExtraDrive4_DataStoreComboBox.enabled = $false
+			$ExtraDrive4_letterComboBox.enabled = $false
+			$ExtraDrive4_SelectionLabel.enabled = $false
+			$ExtraDrive4SizeTextBox.enabled = $false
+			$ExtraDrive4_SizeLabel.enabled = $false
+			$ExtraDrive4_DatastoreLabel.enabled = $false
 			#ED5
-			$ExtraDrive5_DataStoreComboBox.visible = $false
-			$ExtraDrive5_letterComboBox.visible = $false
-			$ExtraDrive5_SelectionLabel.visible = $false
-			$ExtraDrive5SizeTextBox.visible = $false
-			$ExtraDrive5_SizeLabel.visible = $false
-			$ExtraDrive5_DatastoreLabel.visible = $false
+			$ExtraDrive5_DataStoreComboBox.enabled = $false
+			$ExtraDrive5_letterComboBox.enabled = $false
+			$ExtraDrive5_SelectionLabel.enabled = $false
+			$ExtraDrive5SizeTextBox.enabled = $false
+			$ExtraDrive5_SizeLabel.enabled = $false
+			$ExtraDrive5_DatastoreLabel.enabled = $false
 		}
 		2 {
 			#ED1
-			$ExtraDrive1_DataStoreComboBox.visible = $true
-			$ExtraDrive1_letterComboBox.visible = $true
-			$ExtraDrive1_SelectionLabel.visible = $true
-			$ExtraDrive1SizeTextBox.visible = $true
-			$ExtraDrive1_SizeLabel.visible = $true
-			$ExtraDrive1_DatastoreLabel.visible = $true
+			$ExtraDrive1_DataStoreComboBox.enabled = $true
+			$ExtraDrive1_letterComboBox.enabled = $true
+			$ExtraDrive1_SelectionLabel.enabled = $true
+			$ExtraDrive1SizeTextBox.enabled = $true
+			$ExtraDrive1_SizeLabel.enabled = $true
+			$ExtraDrive1_DatastoreLabel.enabled = $true
 			#ED2
-			$ExtraDrive2_DataStoreComboBox.visible = $true
-			$ExtraDrive2_letterComboBox.visible = $true
-			$ExtraDrive2_SelectionLabel.visible = $true
-			$ExtraDrive2SizeTextBox.visible = $true
-			$ExtraDrive2_SizeLabel.visible = $true
-			$ExtraDrive2_DatastoreLabel.visible = $true
+			$ExtraDrive2_DataStoreComboBox.enabled = $true
+			$ExtraDrive2_letterComboBox.enabled = $true
+			$ExtraDrive2_SelectionLabel.enabled = $true
+			$ExtraDrive2SizeTextBox.enabled = $true
+			$ExtraDrive2_SizeLabel.enabled = $true
+			$ExtraDrive2_DatastoreLabel.enabled = $true
 			#ED3
-			$ExtraDrive3_DataStoreComboBox.visible = $false
-			$ExtraDrive3_letterComboBox.visible = $false
-			$ExtraDrive3_SelectionLabel.visible = $false
-			$ExtraDrive3SizeTextBox.visible = $false
-			$ExtraDrive3_SizeLabel.visible = $false
-			$ExtraDrive3_DatastoreLabel.visible = $false
+			$ExtraDrive3_DataStoreComboBox.enabled = $false
+			$ExtraDrive3_letterComboBox.enabled = $false
+			$ExtraDrive3_SelectionLabel.enabled = $false
+			$ExtraDrive3SizeTextBox.enabled = $false
+			$ExtraDrive3_SizeLabel.enabled = $false
+			$ExtraDrive3_DatastoreLabel.enabled = $false
 			#ED4
-			$ExtraDrive4_DataStoreComboBox.visible = $false
-			$ExtraDrive4_letterComboBox.visible = $false
-			$ExtraDrive4_SelectionLabel.visible = $false
-			$ExtraDrive4SizeTextBox.visible = $false
-			$ExtraDrive4_SizeLabel.visible = $false
-			$ExtraDrive4_DatastoreLabel.visible = $false
+			$ExtraDrive4_DataStoreComboBox.enabled = $false
+			$ExtraDrive4_letterComboBox.enabled = $false
+			$ExtraDrive4_SelectionLabel.enabled = $false
+			$ExtraDrive4SizeTextBox.enabled = $false
+			$ExtraDrive4_SizeLabel.enabled = $false
+			$ExtraDrive4_DatastoreLabel.enabled = $false
 			#ED5
-			$ExtraDrive5_DataStoreComboBox.visible = $false
-			$ExtraDrive5_letterComboBox.visible = $false
-			$ExtraDrive5_SelectionLabel.visible = $false
-			$ExtraDrive5SizeTextBox.visible = $false
-			$ExtraDrive5_SizeLabel.visible = $false
-			$ExtraDrive5_DatastoreLabel.visible = $false
+			$ExtraDrive5_DataStoreComboBox.enabled = $false
+			$ExtraDrive5_letterComboBox.enabled = $false
+			$ExtraDrive5_SelectionLabel.enabled = $false
+			$ExtraDrive5SizeTextBox.enabled = $false
+			$ExtraDrive5_SizeLabel.enabled = $false
+			$ExtraDrive5_DatastoreLabel.enabled = $false
 		}
 		3 {
 			#ED1
-			$ExtraDrive1_DataStoreComboBox.visible = $true
-			$ExtraDrive1_letterComboBox.visible = $true
-			$ExtraDrive1_SelectionLabel.visible = $true
-			$ExtraDrive1SizeTextBox.visible = $true
-			$ExtraDrive1_SizeLabel.visible = $true
-			$ExtraDrive1_DatastoreLabel.visible = $true
+			$ExtraDrive1_DataStoreComboBox.enabled = $true
+			$ExtraDrive1_letterComboBox.enabled = $true
+			$ExtraDrive1_SelectionLabel.enabled = $true
+			$ExtraDrive1SizeTextBox.enabled = $true
+			$ExtraDrive1_SizeLabel.enabled = $true
+			$ExtraDrive1_DatastoreLabel.enabled = $true
 			#ED2
-			$ExtraDrive2_DataStoreComboBox.visible = $true
-			$ExtraDrive2_letterComboBox.visible = $true
-			$ExtraDrive2_SelectionLabel.visible = $true
-			$ExtraDrive2SizeTextBox.visible = $true
-			$ExtraDrive2_SizeLabel.visible = $true
-			$ExtraDrive2_DatastoreLabel.visible = $true
+			$ExtraDrive2_DataStoreComboBox.enabled = $true
+			$ExtraDrive2_letterComboBox.enabled = $true
+			$ExtraDrive2_SelectionLabel.enabled = $true
+			$ExtraDrive2SizeTextBox.enabled = $true
+			$ExtraDrive2_SizeLabel.enabled = $true
+			$ExtraDrive2_DatastoreLabel.enabled = $true
 			#ED3
-			$ExtraDrive3_DataStoreComboBox.visible = $true
-			$ExtraDrive3_letterComboBox.visible = $true
-			$ExtraDrive3_SelectionLabel.visible = $true
-			$ExtraDrive3SizeTextBox.visible = $true
-			$ExtraDrive3_SizeLabel.visible = $true
-			$ExtraDrive3_DatastoreLabel.visible = $true
+			$ExtraDrive3_DataStoreComboBox.enabled = $true
+			$ExtraDrive3_letterComboBox.enabled = $true
+			$ExtraDrive3_SelectionLabel.enabled = $true
+			$ExtraDrive3SizeTextBox.enabled = $true
+			$ExtraDrive3_SizeLabel.enabled = $true
+			$ExtraDrive3_DatastoreLabel.enabled = $true
 			#ED4
-			$ExtraDrive4_DataStoreComboBox.visible = $false
-			$ExtraDrive4_letterComboBox.visible = $false
-			$ExtraDrive4_SelectionLabel.visible = $false
-			$ExtraDrive4SizeTextBox.visible = $false
-			$ExtraDrive4_SizeLabel.visible = $false
-			$ExtraDrive4_DatastoreLabel.visible = $false
+			$ExtraDrive4_DataStoreComboBox.enabled = $false
+			$ExtraDrive4_letterComboBox.enabled = $false
+			$ExtraDrive4_SelectionLabel.enabled = $false
+			$ExtraDrive4SizeTextBox.enabled = $false
+			$ExtraDrive4_SizeLabel.enabled = $false
+			$ExtraDrive4_DatastoreLabel.enabled = $false
 			#ED5
-			$ExtraDrive5_DataStoreComboBox.visible = $false
-			$ExtraDrive5_letterComboBox.visible = $false
-			$ExtraDrive5_SelectionLabel.visible = $false
-			$ExtraDrive5SizeTextBox.visible = $false
-			$ExtraDrive5_SizeLabel.visible = $false
-			$ExtraDrive5_DatastoreLabel.visible = $false
+			$ExtraDrive5_DataStoreComboBox.enabled = $false
+			$ExtraDrive5_letterComboBox.enabled = $false
+			$ExtraDrive5_SelectionLabel.enabled = $false
+			$ExtraDrive5SizeTextBox.enabled = $false
+			$ExtraDrive5_SizeLabel.enabled = $false
+			$ExtraDrive5_DatastoreLabel.enabled = $false
 		}
 		4 {
 			#ED1
-			$ExtraDrive1_DataStoreComboBox.visible = $true
-			$ExtraDrive1_letterComboBox.visible = $true
-			$ExtraDrive1_SelectionLabel.visible = $true
-			$ExtraDrive1SizeTextBox.visible = $true
-			$ExtraDrive1_SizeLabel.visible = $true
-			$ExtraDrive1_DatastoreLabel.visible = $true
+			$ExtraDrive1_DataStoreComboBox.enabled = $true
+			$ExtraDrive1_letterComboBox.enabled = $true
+			$ExtraDrive1_SelectionLabel.enabled = $true
+			$ExtraDrive1SizeTextBox.enabled = $true
+			$ExtraDrive1_SizeLabel.enabled = $true
+			$ExtraDrive1_DatastoreLabel.enabled = $true
 			#ED2
-			$ExtraDrive2_DataStoreComboBox.visible = $true
-			$ExtraDrive2_letterComboBox.visible = $true
-			$ExtraDrive2_SelectionLabel.visible = $true
-			$ExtraDrive2SizeTextBox.visible = $true
-			$ExtraDrive2_SizeLabel.visible = $true
-			$ExtraDrive2_DatastoreLabel.visible = $true
+			$ExtraDrive2_DataStoreComboBox.enabled = $true
+			$ExtraDrive2_letterComboBox.enabled = $true
+			$ExtraDrive2_SelectionLabel.enabled = $true
+			$ExtraDrive2SizeTextBox.enabled = $true
+			$ExtraDrive2_SizeLabel.enabled = $true
+			$ExtraDrive2_DatastoreLabel.enabled = $true
 			#ED3
-			$ExtraDrive3_DataStoreComboBox.visible = $true
-			$ExtraDrive3_letterComboBox.visible = $true
-			$ExtraDrive3_SelectionLabel.visible = $true
-			$ExtraDrive3SizeTextBox.visible = $true
-			$ExtraDrive3_SizeLabel.visible = $true
-			$ExtraDrive3_DatastoreLabel.visible = $true
+			$ExtraDrive3_DataStoreComboBox.enabled = $true
+			$ExtraDrive3_letterComboBox.enabled = $true
+			$ExtraDrive3_SelectionLabel.enabled = $true
+			$ExtraDrive3SizeTextBox.enabled = $true
+			$ExtraDrive3_SizeLabel.enabled = $true
+			$ExtraDrive3_DatastoreLabel.enabled = $true
 			#ED4
-			$ExtraDrive4_DataStoreComboBox.visible = $true
-			$ExtraDrive4_letterComboBox.visible = $true
-			$ExtraDrive4_SelectionLabel.visible = $true
-			$ExtraDrive4SizeTextBox.visible = $true
-			$ExtraDrive4_SizeLabel.visible = $true
-			$ExtraDrive4_DatastoreLabel.visible = $true
+			$ExtraDrive4_DataStoreComboBox.enabled = $true
+			$ExtraDrive4_letterComboBox.enabled = $true
+			$ExtraDrive4_SelectionLabel.enabled = $true
+			$ExtraDrive4SizeTextBox.enabled = $true
+			$ExtraDrive4_SizeLabel.enabled = $true
+			$ExtraDrive4_DatastoreLabel.enabled = $true
 			#ED5
-			$ExtraDrive5_DataStoreComboBox.visible = $false
-			$ExtraDrive5_letterComboBox.visible = $false
-			$ExtraDrive5_SelectionLabel.visible = $false
-			$ExtraDrive5SizeTextBox.visible = $false
-			$ExtraDrive5_SizeLabel.visible = $false
-			$ExtraDrive5_DatastoreLabel.visible = $false
+			$ExtraDrive5_DataStoreComboBox.enabled = $false
+			$ExtraDrive5_letterComboBox.enabled = $false
+			$ExtraDrive5_SelectionLabel.enabled = $false
+			$ExtraDrive5SizeTextBox.enabled = $false
+			$ExtraDrive5_SizeLabel.enabled = $false
+			$ExtraDrive5_DatastoreLabel.enabled = $false
 		}
 		5{
 			#ED1
-			$ExtraDrive1_DataStoreComboBox.visible = $true
-			$ExtraDrive1_letterComboBox.visible = $true
-			$ExtraDrive1_SelectionLabel.visible = $true
-			$ExtraDrive1SizeTextBox.visible = $true
-			$ExtraDrive1_SizeLabel.visible = $true
-			$ExtraDrive1_DatastoreLabel.visible = $true
+			$ExtraDrive1_DataStoreComboBox.enabled = $true
+			$ExtraDrive1_letterComboBox.enabled = $true
+			$ExtraDrive1_SelectionLabel.enabled = $true
+			$ExtraDrive1SizeTextBox.enabled = $true
+			$ExtraDrive1_SizeLabel.enabled = $true
+			$ExtraDrive1_DatastoreLabel.enabled = $true
 			#ED2
-			$ExtraDrive2_DataStoreComboBox.visible = $true
-			$ExtraDrive2_letterComboBox.visible = $true
-			$ExtraDrive2_SelectionLabel.visible = $true
-			$ExtraDrive2SizeTextBox.visible = $true
-			$ExtraDrive2_SizeLabel.visible = $true
-			$ExtraDrive2_DatastoreLabel.visible = $true
+			$ExtraDrive2_DataStoreComboBox.enabled = $true
+			$ExtraDrive2_letterComboBox.enabled = $true
+			$ExtraDrive2_SelectionLabel.enabled = $true
+			$ExtraDrive2SizeTextBox.enabled = $true
+			$ExtraDrive2_SizeLabel.enabled = $true
+			$ExtraDrive2_DatastoreLabel.enabled = $true
 			#ED3
-			$ExtraDrive3_DataStoreComboBox.visible = $true
-			$ExtraDrive3_letterComboBox.visible = $true
-			$ExtraDrive3_SelectionLabel.visible = $true
-			$ExtraDrive3SizeTextBox.visible = $true
-			$ExtraDrive3_SizeLabel.visible = $true
-			$ExtraDrive3_DatastoreLabel.visible = $true
+			$ExtraDrive3_DataStoreComboBox.enabled = $true
+			$ExtraDrive3_letterComboBox.enabled = $true
+			$ExtraDrive3_SelectionLabel.enabled = $true
+			$ExtraDrive3SizeTextBox.enabled = $true
+			$ExtraDrive3_SizeLabel.enabled = $true
+			$ExtraDrive3_DatastoreLabel.enabled = $true
 			#ED4
-			$ExtraDrive4_DataStoreComboBox.visible = $true
-			$ExtraDrive4_letterComboBox.visible = $true
-			$ExtraDrive4_SelectionLabel.visible = $true
-			$ExtraDrive4SizeTextBox.visible = $true
-			$ExtraDrive4_SizeLabel.visible = $true
-			$ExtraDrive4_DatastoreLabel.visible = $true
+			$ExtraDrive4_DataStoreComboBox.enabled = $true
+			$ExtraDrive4_letterComboBox.enabled = $true
+			$ExtraDrive4_SelectionLabel.enabled = $true
+			$ExtraDrive4SizeTextBox.enabled = $true
+			$ExtraDrive4_SizeLabel.enabled = $true
+			$ExtraDrive4_DatastoreLabel.enabled = $true
 			#ED5
-			$ExtraDrive5_DataStoreComboBox.visible = $true
-			$ExtraDrive5_letterComboBox.visible = $true
-			$ExtraDrive5_SelectionLabel.visible = $true
-			$ExtraDrive5SizeTextBox.visible = $true
-			$ExtraDrive5_SizeLabel.visible = $true
-			$ExtraDrive5_DatastoreLabel.visible = $true
+			$ExtraDrive5_DataStoreComboBox.enabled = $true
+			$ExtraDrive5_letterComboBox.enabled = $true
+			$ExtraDrive5_SelectionLabel.enabled = $true
+			$ExtraDrive5SizeTextBox.enabled = $true
+			$ExtraDrive5_SizeLabel.enabled = $true
+			$ExtraDrive5_DatastoreLabel.enabled = $true
 		}
 	}
 }
@@ -857,7 +857,7 @@ Function Build-Form {
 
 	#region Local Office Selection Label
 	
-	$LocalOfficeSelectionLabel.Location = '5, 60' #L/R, U/D
+	$LocalOfficeSelectionLabel.Location = '5, 75' #L/R, U/D
 	$LocalOfficeSelectionLabel.Name = 'VCenter Selection Label'
 	$LocalOfficeSelectionLabel.Size = '350, 20' #L/R, U/D
 	$LocalOfficeSelectionLabel.TabIndex = 0
@@ -1065,9 +1065,9 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Seperator Horizontal Line 3
+	#region Seperator Horizontal Line 1
 	
-	$SeperatorLine3.Location = '0, 55' #L/R, U/D
+	$SeperatorLine3.Location = '0, 70' #L/R, U/D
 	$SeperatorLine3.Name = 'VCenter Selection Label'
 	$SeperatorLine3.Size = '800, 2' #L/R, U/D
 	$SeperatorLine3.TabIndex = 0
@@ -1079,9 +1079,9 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Seperator Vertical Line 4
+	#region Seperator Horizontal Line 2
 	
-	$SeperatorLine4.Location = '0, 105' #L/R, U/D
+	$SeperatorLine4.Location = '0, 120' #L/R, U/D
 	$SeperatorLine4.Name = 'VCenter Selection Label'
 	$SeperatorLine4.Size = '800, 2' #L/R, U/D
 	$SeperatorLine4.TabIndex = 0
@@ -1093,9 +1093,9 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Seperator Vertical Line 5
+	#region Seperator Horizontal Line 3
 	
-	$SeperatorLine5.Location = '0, 155' #L/R, U/D
+	$SeperatorLine5.Location = '0, 170' #L/R, U/D
 	$SeperatorLine5.Name = 'VCenter Selection Label'
 	$SeperatorLine5.Size = '365, 2' #L/R, U/D
 	$SeperatorLine5.TabIndex = 0
@@ -1107,9 +1107,9 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Seperator Vertical Line 6
+	#region Seperator Horizontal Line 4
 	
-	$SeperatorLine6.Location = '0, 205' #L/R, U/D
+	$SeperatorLine6.Location = '0, 220' #L/R, U/D
 	$SeperatorLine6.Name = 'VCenter Selection Label'
 	$SeperatorLine6.Size = '800, 2' #L/R, U/D
 	$SeperatorLine6.TabIndex = 0
@@ -1121,9 +1121,9 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Seperator Vertical Line 7
+	#region Seperator Horizontal Line 5
 	
-	$SeperatorLine7.Location = '0, 255' #L/R, U/D
+	$SeperatorLine7.Location = '0, 270' #L/R, U/D
 	$SeperatorLine7.Name = 'VCenter Selection Label'
 	$SeperatorLine7.Size = '800, 2' #L/R, U/D
 	$SeperatorLine7.TabIndex = 0
@@ -1135,9 +1135,9 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Seperator Vertical Line 8
+	#region Seperator Horizontal Line 6
 	
-	$SeperatorLine8.Location = '0, 305' #L/R, U/D
+	$SeperatorLine8.Location = '0, 320' #L/R, U/D
 	$SeperatorLine8.Name = 'VCenter Selection Label'
 	$SeperatorLine8.Size = '800, 2' #L/R, U/D
 	$SeperatorLine8.TabIndex = 0
@@ -1149,9 +1149,9 @@ Function Build-Form {
 	
 	#endregion
 
-	#region Seperator Vertical Line 9
+	#region Seperator Horizontal Line 7
 	
-	$SeperatorLine9.Location = '0, 355' #L/R, U/D
+	$SeperatorLine9.Location = '0, 370' #L/R, U/D
 	$SeperatorLine9.Name = 'VCenter Selection Label'
 	$SeperatorLine9.Size = '800, 2' #L/R, U/D
 	$SeperatorLine9.TabIndex = 0
@@ -1295,8 +1295,8 @@ Function Build-Form {
 	
 	$NumDrivesTextBox = New-Object System.Windows.Forms.TextBox
 	$NumDrivesTextBox.Location = New-Object System.Drawing.Size(580, 110)
-	$NumDrivesTextBox.Size = New-Object System.Drawing.Size(60, 130)
-	$NumDrivesTextBox.Font = "Times New Roman,47"
+	$NumDrivesTextBox.Size = New-Object System.Drawing.Size(60, 70)
+	$NumDrivesTextBox.Font = "Times New Roman,38"
 	$NumDrivesTextBox.Enabled = $True
 	$NumDrivesTextBox.ReadOnly = $True
 	$NumDrivesTextBox.Text = $Global:DriveCounter
@@ -1309,7 +1309,7 @@ Function Build-Form {
 	$ExtraDrive1_letterComboBox.Location = "370, 225"
 	$ExtraDrive1_letterComboBox.Size = "50, 20"
 	$ExtraDrive1_letterComboBox.Font = "Times New Roman,12"
-	$ExtraDrive1_letterComboBox.Visible = $False
+	$ExtraDrive1_letterComboBox.enabled = $False
 	$ExtraDrive1_letterComboBox.items.addrange($Global:DriveLetterarray)
 	$ExtraDrive1_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive1_letterComboBox)
@@ -1317,7 +1317,7 @@ Function Build-Form {
 	$ExtraDrive2_letterComboBox.Location = "370, 275"
 	$ExtraDrive2_letterComboBox.Size = "50, 20"
 	$ExtraDrive2_letterComboBox.Font = "Times New Roman,12"
-	$ExtraDrive2_letterComboBox.Visible = $False
+	$ExtraDrive2_letterComboBox.enabled = $False
 	$ExtraDrive2_letterComboBox.items.addrange($Global:DriveLetterarray)
 	$ExtraDrive2_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive2_letterComboBox)
@@ -1325,7 +1325,7 @@ Function Build-Form {
 	$ExtraDrive3_letterComboBox.Location = "370, 325"
 	$ExtraDrive3_letterComboBox.Size = "50, 20"
 	$ExtraDrive3_letterComboBox.Font = "Times New Roman,12"
-	$ExtraDrive3_letterComboBox.Visible = $False
+	$ExtraDrive3_letterComboBox.enabled = $False
 	$ExtraDrive3_letterComboBox.items.addrange($Global:DriveLetterarray)
 	$ExtraDrive3_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive3_letterComboBox)
@@ -1333,7 +1333,7 @@ Function Build-Form {
 	$ExtraDrive4_letterComboBox.Location = "370, 375"
 	$ExtraDrive4_letterComboBox.Size = "50, 20"
 	$ExtraDrive4_letterComboBox.Font = "Times New Roman,12"
-	$ExtraDrive4_letterComboBox.Visible = $False
+	$ExtraDrive4_letterComboBox.enabled = $False
 	$ExtraDrive4_letterComboBox.items.addrange($Global:DriveLetterarray)
 	$ExtraDrive4_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive4_letterComboBox)
@@ -1341,7 +1341,7 @@ Function Build-Form {
 	$ExtraDrive5_letterComboBox.Location = "370, 425"
 	$ExtraDrive5_letterComboBox.Size = "50, 20"
 	$ExtraDrive5_letterComboBox.Font = "Times New Roman,12"
-	$ExtraDrive5_letterComboBox.Visible = $False
+	$ExtraDrive5_letterComboBox.enabled = $False
 	$ExtraDrive5_letterComboBox.items.addrange($Global:DriveLetterarray)
 	$ExtraDrive5_letterComboBox.selectedindex = 0
 	$Form.Controls.Add($ExtraDrive5_letterComboBox)
@@ -1355,7 +1355,7 @@ Function Build-Form {
 	$ExtraDrive1_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive1_SelectionLabel.TabIndex = 0
 	$ExtraDrive1_SelectionLabel.Text = 'Drive'
-	$ExtraDrive1_SelectionLabel.Visible = $False
+	$ExtraDrive1_SelectionLabel.enabled = $False
 	$form.Controls.Add($ExtraDrive1_SelectionLabel)
 	
 	$ExtraDrive2_SelectionLabel.Location = '370, 260' #L/R, U/D
@@ -1363,7 +1363,7 @@ Function Build-Form {
 	$ExtraDrive2_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive2_SelectionLabel.TabIndex = 0
 	$ExtraDrive2_SelectionLabel.Text = 'Drive'
-	$ExtraDrive2_SelectionLabel.Visible = $False
+	$ExtraDrive2_SelectionLabel.enabled = $False
 	$form.Controls.Add($ExtraDrive2_SelectionLabel)
 	
 	$ExtraDrive3_SelectionLabel.Location = '370, 310' #L/R, U/D
@@ -1371,7 +1371,7 @@ Function Build-Form {
 	$ExtraDrive3_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive3_SelectionLabel.TabIndex = 0
 	$ExtraDrive3_SelectionLabel.Text = 'Drive'
-	$ExtraDrive3_SelectionLabel.Visible = $False
+	$ExtraDrive3_SelectionLabel.enabled = $False
 	$form.Controls.Add($ExtraDrive3_SelectionLabel)
 	
 	$ExtraDrive4_SelectionLabel.Location = '370, 360' #L/R, U/D
@@ -1379,7 +1379,7 @@ Function Build-Form {
 	$ExtraDrive4_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive4_SelectionLabel.TabIndex = 0
 	$ExtraDrive4_SelectionLabel.Text = 'Drive'
-	$ExtraDrive4_SelectionLabel.Visible = $False
+	$ExtraDrive4_SelectionLabel.enabled = $False
 	$form.Controls.Add($ExtraDrive4_SelectionLabel)
 	
 	$ExtraDrive5_SelectionLabel.Location = '370, 410' #L/R, U/D
@@ -1387,7 +1387,7 @@ Function Build-Form {
 	$ExtraDrive5_SelectionLabel.Size = '60, 20' #L/R, U/D
 	$ExtraDrive5_SelectionLabel.TabIndex = 0
 	$ExtraDrive5_SelectionLabel.Text = 'Drive'
-	$ExtraDrive5_SelectionLabel.Visible = $False
+	$ExtraDrive5_SelectionLabel.enabled = $False
 	$form.Controls.Add($ExtraDrive5_SelectionLabel)
 
 	#endregion
@@ -1395,27 +1395,27 @@ Function Build-Form {
 	#region Extra Drives Size TextBoxes
 	$ExtraDrive1SizeTextBox.Location = New-Object System.Drawing.Size(460, 225)
 	$ExtraDrive1SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
-	$ExtraDrive1SizeTextBox.Visible = $False
+	$ExtraDrive1SizeTextBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive1SizeTextBox)
 	
 	$ExtraDrive2SizeTextBox.Location = New-Object System.Drawing.Size(460, 275)
 	$ExtraDrive2SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
-	$ExtraDrive2SizeTextBox.Visible = $False
+	$ExtraDrive2SizeTextBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive2SizeTextBox)
 	
 	$ExtraDrive3SizeTextBox.Location = New-Object System.Drawing.Size(460, 325)
 	$ExtraDrive3SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
-	$ExtraDrive3SizeTextBox.Visible = $False
+	$ExtraDrive3SizeTextBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive3SizeTextBox)
 	
 	$ExtraDrive4SizeTextBox.Location = New-Object System.Drawing.Size(460, 375)
 	$ExtraDrive4SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
-	$ExtraDrive4SizeTextBox.Visible = $False
+	$ExtraDrive4SizeTextBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive4SizeTextBox)
 	
 	$ExtraDrive5SizeTextBox.Location = New-Object System.Drawing.Size(460, 425)
 	$ExtraDrive5SizeTextBox.Size = New-Object System.Drawing.Size(80, 20)
-	$ExtraDrive5SizeTextBox.Visible = $False
+	$ExtraDrive5SizeTextBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive5SizeTextBox)
 	
 	#endregion
@@ -1426,33 +1426,33 @@ Function Build-Form {
 	$ExtraDrive1_SizeLabel.Name = 'Extra Drives Size Label'
 	$ExtraDrive1_SizeLabel.Size = '80, 20'
 	$ExtraDrive1_SizeLabel.Text = 'Size (GB)'
-	$ExtraDrive1_SizeLabel.Visible = $False
+	$ExtraDrive1_SizeLabel.enabled = $False
 	$ExtraDrive1_SizeLabel.TabIndex = 0
 	$form.Controls.Add($ExtraDrive1_SizeLabel)
 	
 	$ExtraDrive2_SizeLabel.Location = '460, 260'
 	$ExtraDrive2_SizeLabel.Size = '80, 20'
 	$ExtraDrive2_SizeLabel.Text = 'Size (GB)'
-	$ExtraDrive2_SizeLabel.Visible = $False
+	$ExtraDrive2_SizeLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive2_SizeLabel)
 	
 
 	$ExtraDrive3_SizeLabel.Location = '460, 310'
 	$ExtraDrive3_SizeLabel.Size = '80, 20'
 	$ExtraDrive3_SizeLabel.Text = 'Size (GB)'
-	$ExtraDrive3_SizeLabel.Visible = $False
+	$ExtraDrive3_SizeLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive3_SizeLabel)
 	
 	$ExtraDrive4_SizeLabel.Location = '460, 360'
 	$ExtraDrive4_SizeLabel.Size = '80, 20'
 	$ExtraDrive4_SizeLabel.Text = 'Size (GB)'
-	$ExtraDrive4_SizeLabel.Visible = $False
+	$ExtraDrive4_SizeLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive4_SizeLabel)
 	
 	$ExtraDrive5_SizeLabel.Location = '460, 410'
 	$ExtraDrive5_SizeLabel.Size = '80, 20'
 	$ExtraDrive5_SizeLabel.Text = 'Size (GB)'
-	$ExtraDrive5_SizeLabel.Visible = $False
+	$ExtraDrive5_SizeLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive5_SizeLabel)
 	
 	#endregion
@@ -1460,69 +1460,68 @@ Function Build-Form {
 	#region Extra Drives Datastore Labels
 	
 	$ExtraDrive1_DatastoreLabel.Location = '560, 210'
-	$ExtraDrive1_DatastoreLabel.Name = 'Extra Drives Size Label'
 	$ExtraDrive1_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive1_DatastoreLabel.Text = 'Datastore'
-	$ExtraDrive1_DatastoreLabel.Visible = $False
+	$ExtraDrive1_DatastoreLabel.enabled = $False
 	$ExtraDrive1_DatastoreLabel.TabIndex = 0
 	$form.Controls.Add($ExtraDrive1_DatastoreLabel)
 	
 	$ExtraDrive2_DatastoreLabel.Location = '560, 260'
 	$ExtraDrive2_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive2_DatastoreLabel.Text = 'Datastore'
-	$ExtraDrive2_DatastoreLabel.Visible = $False
+	$ExtraDrive2_DatastoreLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive2_DatastoreLabel)
 	
 	$ExtraDrive3_DatastoreLabel.Location = '560, 310'
 	$ExtraDrive3_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive3_DatastoreLabel.Text = 'Datastore'
-	$ExtraDrive3_DatastoreLabel.Visible = $False
+	$ExtraDrive3_DatastoreLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive3_DatastoreLabel)
 	
 	$ExtraDrive4_DatastoreLabel.Location = '560, 360'
 	$ExtraDrive4_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive4_DatastoreLabel.Text = 'Datastore'
-	$ExtraDrive4_DatastoreLabel.Visible = $False
+	$ExtraDrive4_DatastoreLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive4_DatastoreLabel)
 	
 	$ExtraDrive5_DatastoreLabel.Location = '560, 410'
 	$ExtraDrive5_DatastoreLabel.Size = '80, 20'
 	$ExtraDrive5_DatastoreLabel.Text = 'Datastore'
-	$ExtraDrive5_DatastoreLabel.Visible = $False
+	$ExtraDrive5_DatastoreLabel.enabled = $False
 	$Form.Controls.Add($ExtraDrive5_DatastoreLabel)
 	
 	#endregion
 	
 	#region Extra Drives Datastore ComboBoxes
 	
-	$ExtraDrive1_DataStoreComboBox.Location = "560, 225"
+	$ExtraDrive1_DataStoreComboBox.Location = "560, 230"
 	$ExtraDrive1_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive1_DataStoreComboBox.Font = "Times New Roman,12"
-	$ExtraDrive1_DataStoreComboBox.Visible = $False
+	$ExtraDrive1_DataStoreComboBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive1_DataStoreComboBox)
 	
-	$ExtraDrive2_DataStoreComboBox.Location = "560, 275"
+	$ExtraDrive2_DataStoreComboBox.Location = "560, 285"
 	$ExtraDrive2_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive2_DataStoreComboBox.Font = "Times New Roman,12"
-	$ExtraDrive2_DataStoreComboBox.Visible = $False
+	$ExtraDrive2_DataStoreComboBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive2_DataStoreComboBox)
 	
-	$ExtraDrive3_DataStoreComboBox.Location = "560, 325"
+	$ExtraDrive3_DataStoreComboBox.Location = "560, 335"
 	$ExtraDrive3_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive3_DataStoreComboBox.Font = "Times New Roman,12"
-	$ExtraDrive3_DataStoreComboBox.Visible = $False
+	$ExtraDrive3_DataStoreComboBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive3_DataStoreComboBox)
 	
-	$ExtraDrive4_DataStoreComboBox.Location = "560, 375"
+	$ExtraDrive4_DataStoreComboBox.Location = "560, 385"
 	$ExtraDrive4_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive4_DataStoreComboBox.Font = "Times New Roman,12"
-	$ExtraDrive4_DataStoreComboBox.Visible = $False
+	$ExtraDrive4_DataStoreComboBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive4_DataStoreComboBox)
 	
-	$ExtraDrive5_DataStoreComboBox.Location = "560, 425"
+	$ExtraDrive5_DataStoreComboBox.Location = "560, 435"
 	$ExtraDrive5_DataStoreComboBox.Size = "235, 20"
 	$ExtraDrive5_DataStoreComboBox.Font = "Times New Roman,12"
-	$ExtraDrive5_DataStoreComboBox.Visible = $False
+	$ExtraDrive5_DataStoreComboBox.enabled = $False
 	$Form.Controls.Add($ExtraDrive5_DataStoreComboBox)
 	
 	#endregion
