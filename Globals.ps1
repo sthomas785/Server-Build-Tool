@@ -295,6 +295,24 @@ Function Populate-DatastoreClusterDropDown{
 }
 
 Function Populate-PortGroupCombobox{
+<#
+	.SYNOPSIS
+		Function to Populate the Portgroup Combobox.
+	
+	.DESCRIPTION
+		This function is only called if more than one portgroup was matched
+		during the automatic filtering process. It simply takes the multiple
+		portgroups that were matched and fills in the dropdown.
+	
+	.PARAMETER Portgroups
+		Takes a collection of Portgroup objects.
+	
+	.EXAMPLE
+		PS C:\> Populate-DatastoreClusterDropDown -Portgroups $Portgroups
+	
+	.NOTES
+		N/A
+#>	
 	param (
 		[parameter(Mandatory = $true)]
 		[Array]$Portgroups
@@ -640,6 +658,19 @@ Function AddTo-ResourcePool{
 }
 
 Function Create-VM{
+<#
+	.SYNOPSIS
+		Function to create the VM in vcenter.
+	
+	.DESCRIPTION
+		Creates the VM and adds that object to the global variable.
+	
+	.EXAMPLE
+		PS C:\> Create-VM
+	
+	.NOTES
+		N/A
+#>
 	
 	Write-RichText -LogType 'informational' -LogMsg "VM Creation beginning please be patient."
 	
@@ -817,6 +848,22 @@ Function Add-VMDIsks{
 }
 
 Function Validate-IPAddress{
+<#
+	.SYNOPSIS
+		Function validates that the entered IP address is real.
+	
+	.DESCRIPTION
+		Function uses tryparse to tell if an Ip address is valid.
+	
+	.PARAMETER VM
+		The VM created earlier in the automation process.
+	
+	.EXAMPLE
+		PS C:\> Validate-IPAddress -VM $VM
+	
+	.NOTES
+		N/A
+#>
 	
 	param (
 		[parameter(Mandatory = $true)]
@@ -841,6 +888,24 @@ Function Validate-IPAddress{
 }
 
 Function Determine-Portgroup{
+<#
+	.SYNOPSIS
+		Function determines which Portgroup the VM should be placed into.
+	
+	.DESCRIPTION
+		This function uses our naming convention to determine the proper
+		portgroup. If more than one portgroup matches it prompts the user
+		to select from a dropdown.
+	
+	.PARAMETER VM
+		The VM created earlier in the automation process.
+	
+	.EXAMPLE
+		PS C:\> Determine-Portgroup -VM $VM
+	
+	.NOTES
+		N/A
+#>
 	param (
 		[parameter(Mandatory = $true)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
@@ -891,30 +956,22 @@ Function Determine-Portgroup{
 Function Set-VMPortGroup{
 <#
 	.SYNOPSIS
-		Function to set the VM PortGroup Dropdown.
+		Function to set the VM PortGroup.
 	
 	.DESCRIPTION
-		Function connects to VCenter and gets Virtual switch information 
-		for the desired switch. It then pipes that in to Get-VirtualPortGroup
-		and selects the Subnets from that object.
-	
-		It then sets the Portgroup on the desired VM and verifies it was successful.
+		Sets the chosen portgroup on the VM.
 	
 	.PARAMETER VM
 		The VM created earlier in the automation process.
 	
-	.PARAMETER Subnet
+	.PARAMETER Portgroup
 		The subnet/portgroup chosen by the user.
 	
-	.PARAMETER Switchname
-		The switch we determined automatically earlier in the process.
-	
 	.EXAMPLE
-		PS C:\> Set-VMPortGroup -VM $value1 -Subnet 'Value2'
+		PS C:\> Set-VMPortGroup -VM $VM -portgroup $Portgroup
 	
 	.NOTES
-		When i change the tool to automatically choose the subnet 
-		this function may need to change slightly. [#TODO]
+		N/A
 #>
 	param (
 		[Parameter(Mandatory = $true)]
@@ -943,6 +1000,22 @@ Function Set-VMPortGroup{
 }
 
 Function Start-VirtualMachine{
+<#
+	.SYNOPSIS
+		Function to start the cirtual machine.
+	
+	.DESCRIPTION
+		This function starts the VM passed to it.
+	
+	.PARAMETER VM
+		The VM created earlier in the automation process.
+	
+	.EXAMPLE
+		PS C:\> Start-VirtualMachine -VM $VM
+	
+	.NOTES
+		N/A
+#>
 	param (
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
@@ -969,7 +1042,7 @@ Function Wait-ForCustomizationCompletion{
 		The VM created earlier in the automation process.
 	
 	.EXAMPLE
-		PS C:\> Wait-ForCustomizationCompletion -VM $value1
+		PS C:\> Wait-ForCustomizationCompletion -VM $VM
 	
 	.NOTES
 		This was a fun logical hurdle to overcome. I wasn't initially aware of the 
@@ -1059,7 +1132,7 @@ Function Wait-ForCustomizationCompletion{
 Function Update-VMWareTools{
 <#
 	.SYNOPSIS
-		This function updated the VMware tools on the VM.
+		This function updates the VMware tools on the VM.
 	
 	.DESCRIPTION
 		Function waits for the guest tools to be ready since that can 
@@ -1192,21 +1265,17 @@ Function Make-Annotations{
 Function Wait-ForGuest{
 <#
 	.SYNOPSIS
-		Function to wait for a reboot to complete on the VM.
+		Function to wait for the guest OS to become available for commands.
 	
 	.DESCRIPTION
-		After sending the command to join the domain the machine requires a reboot.
-		This function handles the waiting the best way i could figure out which is
-		to wait for the 'InteractiveGuestOperationsReady' property to become true.
-	
-		I found that as long as this was false i was unable to use the console, 
-		so i would be able to script a login either.
+		After updating the VM tools it may take a little while for the OS to
+		become available.
 	
 	.PARAMETER VM
 		The VM created earlier in the automation process.
 	
 	.EXAMPLE
-		PS C:\> Wait-ForReboot -VM $VM
+		PS C:\> Wait-ForGuest -VM $VM
 	
 	.NOTES
 		I'm not 100% sold on this being the best way to do this but its what i have to work with right now.
@@ -1263,10 +1332,13 @@ Function Set-IPInfo{
 		Sets the IP, Default gateway and Subnet mask.
 	
 	.PARAMETER VM
-		A description of the VM parameter.
+		The VM created earlier in the automation process.
+	
+	.PARAMETER LocalCredential
+		The local admin credential object.
 	
 	.EXAMPLE
-		PS C:\> Set-Networking -VM $VM
+		PS C:\> Set-Networking -VM $VM -LocalCredential $LocalCredential
 	
 	.NOTES
 		I hate Invoke-VMScript. It really sucks This function also calls Set-DNSInfo.
@@ -1306,13 +1378,16 @@ Function Set-DNSInfo{
 		Function uses invoke-vmscript for setting the initial DNS config.
 	
 	.PARAMETER VM
-		A description of the VM parameter.
+		The VM created earlier in the automation process.
+	
+	.PARAMETER LocalCredential
+		The local admin credential object.
 	
 	.EXAMPLE
-		PS C:\> Set-DNSInfo -VM $VM
+		PS C:\> Set-DNSInfo -VM $VM -LocalCredential $LocalCredential
 	
 	.NOTES
-		Function calls.
+		N/A
 #>
 	param (
 		[Parameter(Mandatory = $true)]
@@ -1351,6 +1426,28 @@ Function Set-DNSInfo{
 }
 
 Function Enable-Remoting{
+<#
+	.SYNOPSIS
+		Function to enable Powershell Remoting
+	
+	.DESCRIPTION
+		Function runs a few different commands via invoke-vmscript to enable remoting.
+	
+	.PARAMETER VM
+		The VM created earlier in the automation process.
+	
+	.PARAMETER LocalCredential
+		The local admin credential object.
+	
+	.PARAMETER IP
+		The IP of the server.
+	
+	.EXAMPLE
+		PS C:\> Enable-Remoting -VM $VM -LocalCredential $LocalCredential -IP $IP
+	
+	.NOTES
+		N/A
+#>
 	param (
 		[Parameter(Mandatory = $true)]
 		[ValidateNotNullOrEmpty()]
@@ -1437,8 +1534,17 @@ Function JoinTo-Domain{
 	.PARAMETER VM
 		The VM created earlier in the automation process.
 	
+	.PARAMETER LocalCredential
+		The local credential object for the VM.
+	
+	.PARAMETER DomainCredential
+		The domain credential object.
+	
+	.PARAMETER IP
+		The IP of the VM.
+	
 	.EXAMPLE
-		PS C:\> JoinTo-Domain -VM VM
+		PS C:\> JoinTo-Domain -VM $VM -LocalCredential $LocalCredential -DomainCredential $DomainCredential -IP $IP
 	
 	.NOTES
 		Since invoke-vm script sucks i have to do it this way. 
@@ -1491,8 +1597,14 @@ Function Wait-ForReboot{
 	.PARAMETER VM
 		The VM created earlier in the automation process.
 	
+	.PARAMETER LocalCredential
+		The local admin credential object.
+	
+	.PARAMETER IP
+		The IP of the server.
+	
 	.EXAMPLE
-		PS C:\> Wait-ForReboot -VM $VM
+		PS C:\> Wait-ForReboot -VM $VM -LocalCredential $Localcredential -IP $IP
 	
 	.NOTES
 		I'm not 100% sold on this being the best way to do this but its what i have to work with right now.
@@ -1542,6 +1654,25 @@ Function Wait-ForReboot{
 }
 
 Function Verify-Domain{
+<#
+	.SYNOPSIS
+		Function to verify the machine joined the domain.
+	
+	.DESCRIPTION
+		Function verifies the proper domain is present.
+	
+	.PARAMETER LocalCredential
+		The local admin credential object.
+	
+	.PARAMETER IP
+		The IP of the VM.
+	
+	.EXAMPLE
+		PS C:\> Verify-Domain -LocalCredential $value1 -IP 'Value2'
+	
+	.NOTES
+		N/A
+#>
 	param (
 		[System.Management.Automation.PSCredential]$LocalCredential,
 		[String]$IP
