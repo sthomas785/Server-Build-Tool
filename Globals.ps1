@@ -4,19 +4,16 @@
 
 #region Global Variables
 $Global:VMCreationSelections = New-Object –TypeName PSObject
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name VCenterServer -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name Location -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name ResourcePool -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name Name -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name Datastore -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name Template -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name OSCustomizationSpec -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name VCPUs -Value '2'
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name PortGroup -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name SwitchName -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name VM -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name FullIP -Value ''
-$Global:VMCreationSelections | Add-Member -MemberType NoteProperty -Name LocalAdminCreds -Value ''
+$Global:VCenterServer = ""
+$Global:Location = ""
+$Global:ResourcePool = ""
+$Global:VMName = ""
+$Global:Datastore = ""
+$Global:Template = ""
+$Global:OSCustomizationSpec = ""
+$Global:VM = ""
+$Global:FullIP = ""
+$Global:LocalAdminCreds = ""
 
 [Int]$Global:DriveCounter = 0
 [Array]$Global:DriveLetterarray = @('', 'a', 'b', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z')
@@ -38,21 +35,29 @@ Function ConnectTo-VCenter{
 		Calls Populate-LocalOfficeDropdown when complete.
 #>
 	
-	Write-RichText -LogType 'Informational' -LogMsg "Connecting to $($Global:VMCreationSelections.VCenterServer) please be patient."
-	$Connection = Connect-VIServer -Server $Global:VMCreationSelections.VCenterServer `
-								   -Credential $Script:Credentials
+	param(
+		
+		[String]$Server,
+		[System.Management.Automation.PSCredential]$DomainCredential
+	
+	)
+	
+	Write-RichText -LogType 'Informational' -LogMsg "Connecting to $Server please be patient."
+	$Connection = Connect-VIServer -Server $Server `
+								   -Credential $DomainCredential
 	
 	If (!$Connection)
 	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to connect to VCenterServer ¯\_(ツ)_/¯."
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to connect to $Server ¯\_(ツ)_/¯."
 		return;
 	}
 	
 	Else
 	{
-		Write-Richtext -LogType 'Success' -LogMsg "Connected to VCenterServer."
+		Write-Richtext -LogType 'Success' -LogMsg "Connected to $Server."
 		Write-Richtext -LogType 'Informational' -LogMsg "Retrieving Local Offices please be patient."
-		Populate-LocalOfficeDropDown
+		
+		Populate-LocalOfficeDropDown -Server $Server
 	}
 }
 
@@ -71,17 +76,24 @@ Function Populate-TemplateDropDown{
 	.NOTES
 		N/A
 #>
-	$Templates = Get-Template -Server $Global:VMCreationSelections.VCenterServer `
-							  -Location $($LocalOfficeSelectionComboBox.SelectedItem)
+	
+	param (
+		
+		[String]$Server,
+		[String]$Location
+		
+	)
+	$Templates = Get-Template -Server $Server `
+							  -Location $Location
 	
 	If (!$Templates)
 	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather templates from $($Global:VMCreationSelections.VCenterServer)."
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather templates from $Server."
 	}
 	
 	Else
 	{
-		Write-Richtext -LogType 'Success' -LogMsg "Templates retrieved from $($Global:VMCreationSelections.VCenterServer)."
+		Write-Richtext -LogType 'Success' -LogMsg "Templates retrieved from $Server."
 		
 		$TemplateSelectionComboBox.Items.clear()
 		
@@ -110,7 +122,12 @@ Function Populate-LocalOfficeDropDown{
 		N/A
 #>
 	
-	$LocalOffices = Get-Datacenter -Server $Global:VMCreationSelections.VCenterServer
+	param
+	(
+		[String]$Server
+	)
+	
+	$LocalOffices = Get-Datacenter -Server $Server
 	
 	If (!$LocalOffices)
 	{
@@ -149,7 +166,12 @@ Function Populate-CustomizationDropDown{
 		N/A
 #>
 	
-	$Customizations = Get-OSCustomizationSpec -Server $Global:VMCreationSelections.VCenterServer
+	param
+	(
+		[String]$Server
+	)
+	
+	$Customizations = Get-OSCustomizationSpec -Server $Server
 	
 	If (!$Customizations)
 	{
@@ -187,13 +209,20 @@ Function Populate-ESXClustersDropDown{
 		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
 #>
 	
+	param (
+		
+		[String]$Server,
+		[String]$Location
+		
+	)
+	
 	$ErrorActionPreference = 'SilentlyContinue'
 	
-	$Clusters = Get-Cluster -Server $Global:VMCreationSelections.VCenterServer `
-							-location $Global:VMCreationSelections.Location
+	$Clusters = Get-Cluster -Server $Server `
+							-location $Location
 	
-	$VMHosts = Get-VMHost -Server $VCenterComboBox.SelectedItem `
-						  -location $Global:VMCreationSelections.Location
+	$VMHosts = Get-VMHost -Server $Server `
+						  -location $Location
 	
 	$ErrorActionPreference = 'Continue'
 	
@@ -250,15 +279,16 @@ Function Populate-DatastoreClusterDropDown{
 		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
 #>
 	
+	param
+	(
+		$ResourcePool
+	)
+	
 	$ErrorActionPreference = 'SilentlyContinue'
 	
-	$DataStoreClusters = Get-Cluster -Server $Global:VMCreationSelections.VCenterServer `
-									 -Name $($ESXClustersComboBox.SelectedItem) `
-									| Get-Datastore | Get-DatastoreCluster
-
-	$DataStores = Get-VMHOST -Server $Global:VMCreationSelections.VCenterServer `
-							 -Name $ESXClustersComboBox.SelectedItem `
-							 | Get-Datastore
+	$DataStores = $ResourcePool | Get-Datastore
+	
+	$DataStoreClusters = $DataStores | Get-DatastoreCluster
 	
 	$ErrorActionPreference = 'Continue'
 	
@@ -674,16 +704,16 @@ Function Create-VM{
 	
 	Write-RichText -LogType 'informational' -LogMsg "VM Creation beginning please be patient."
 	
-	New-VM -Server $Global:VMCreationSelections.VCenterServer `
-		   -ResourcePool $Global:VMCreationSelections.ResourcePool `
-		   -Name $Global:VMCreationSelections.Name `
-		   -Datastore $Global:VMCreationSelections.Datastore  `
-		   -Template $Global:VMCreationSelections.Template `
-		   -OSCustomizationSpec $Global:VMCreationSelections.OSCustomizationSpec
+	New-VM -Server $Global:VCenterServer `
+		   -ResourcePool $Global:ResourcePool `
+		   -Name $Global:VMName `
+		   -Datastore $Global:Datastore  `
+		   -Template $Global:Template `
+		   -OSCustomizationSpec $Global:OSCustomizationSpec
 	
-	$VM = Get-VM -Server $Global:VMCreationSelections.VCenterServer `
-				 -Location $Global:VMCreationSelections.Location `
-				 -Name $Global:VMCreationSelections.Name
+	$VM = Get-VM -Server $Global:VCenterServer `
+				 -Location $Global:Location `
+				 -Name $Global:VMName
 	
 	If (!$VM)
 	{
@@ -694,8 +724,12 @@ Function Create-VM{
 	Else
 	{
 		Write-RichText -LogType 'Success' -LogMsg "VM Creation Completed!"
-		$Global:VMCreationSelections.VM = $VM
-		Set-VMCPUCount -VM $VM -NumCPU $VCPUsComboBox.SelectedItem
+		
+		$Global:VM = $VM
+		
+		Set-VMCPUCount -VM $VM `
+					   -NumCPU $VCPUsComboBox.SelectedItem
+		
 	}
 	
 }
@@ -876,7 +910,7 @@ Function Validate-IPAddress{
 	If ([ipaddress]::TryParse($FullIP, $ValidIP))
 	{
 		Write-RichText -LogType 'Success' -LogMsg "IP Address $FullIP is valid."
-		$Global:VMCreationSelections.Fullip = $Fullip
+		$Global:fullip = $Fullip
 		Determine-Portgroup -VM $VM
 	}
 	
@@ -912,7 +946,7 @@ Function Determine-Portgroup{
 	)
 	
 	[String]$PartialIp = $Octet1Textbox.text + "." + $Octet2Textbox.text + "." + $Octet3Textbox.text
-	[String]$Location = $Global:VMCreationSelections.location
+	[String]$Location = $Global:Location
 	[Array]$VirtualSwitches = $vm.VMHost | get-virtualswitch
 	[Array]$Portgroups = @()
 	
@@ -1023,7 +1057,7 @@ Function Start-VirtualMachine{
 	Write-Richtext -LogType 'Informational' -LogMsg "Starting VM..."
 	$VM | Start-VM -confirm:$False
 	
-	Wait-ForCustomizationCompletion -VM $Global:VMCreationSelections.VM
+	Wait-ForCustomizationCompletion -VM $Global:VM
 }
 
 Function Wait-ForCustomizationCompletion{
@@ -1060,7 +1094,7 @@ Function Wait-ForCustomizationCompletion{
 	
 	$StartTimeEventFilter = (Get-Date).AddMinutes(-10)
 	
-	for ($i = 1; $i -le 60; $i++)
+	for ($i = 1; $i -le 180; $i++)
 	{
 		
 		#Check for the Started Customization Event
@@ -1078,15 +1112,15 @@ Function Wait-ForCustomizationCompletion{
 		Else
 		{
 			
-			If ($I -Eq 60)
+			If ($I -Eq 180)
 			{
 				
 				Write-Richtext -LogType 'Error' -LogMsg "Customization was never applied. Please ensure the VM was properly started."
 				Return
 			}
 			
-			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for Customization to begin. Sleeping for 30 seconds..."
-			Start-sleep -Seconds 30
+			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for Customization to begin. Sleeping for 10 seconds... Loop ($i of 180)"
+			Start-sleep -Seconds 10
 		}
 	}
 	
@@ -1094,7 +1128,7 @@ Function Wait-ForCustomizationCompletion{
 	
 	$StartTimeEventFilter = (Get-Date).AddMinutes(-5)
 	
-	for ($i = 1; $i -le 60; $i++)
+	for ($i = 1; $i -le 180; $i++)
 	{
 		
 		#Check for the Completed Customization Event
@@ -1112,20 +1146,20 @@ Function Wait-ForCustomizationCompletion{
 		Else
 		{
 			
-			If ($I -eq 60)
+			If ($I -eq 180)
 			{
 				
 				Write-Richtext -LogType 'Error' -LogMsg "Customization never applied. Please investigate."
 				Return
 			}
 			
-			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for Customization to complete. Sleeping for 30 seconds..."
-			Start-sleep -Seconds 30
+			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for Customization to complete. Sleeping for 10 seconds... Loop ($i of 180)"
+			Start-sleep -Seconds 10
 		}
 		
 	}
 	
-	Update-VMWareTools -VM $Global:VMCreationSelections.VM
+	Update-VMWareTools -VM $Global:VM
 	
 }
 
@@ -1156,7 +1190,7 @@ Function Update-VMWareTools{
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
-	for ($i = 1; $i -le 60; $i++)
+	for ($i = 1; $i -le 180; $i++)
 	{
 		
 		$RunningStatus = (Get-View $VM.Id -Property Guest).Guest.ToolsRunningStatus
@@ -1170,15 +1204,15 @@ Function Update-VMWareTools{
 		
 		Else
 		{
-			If ($I -Eq 60)
+			If ($I -Eq 180)
 			{
 				
 				Write-Richtext -LogType 'Error' -LogMsg "VMTools are taking too long to start. please investigate."
 				Return
 			}
 			
-			Write-Richtext -LogType 'informational' -LogMsg "Waiting on VMTools to start. Sleeping for 30 seconds..."
-			Start-sleep -Seconds 30
+			Write-Richtext -LogType 'informational' -LogMsg "Waiting on VMTools to start. Sleeping for 10 seconds... Loop ($i of 180)"
+			Start-sleep -Seconds 10
 		}
 		
 	}
@@ -1186,7 +1220,7 @@ Function Update-VMWareTools{
 	Write-RichText -LogType "informational" -LogMsg "Updating VMWare Tools. Please Be Patient"
 	Update-tools -VM $VM
 	
-	for ($i = 1; $i -le 60; $i++)
+	for ($i = 1; $i -le 180; $i++)
 	{
 		$GuestToolsStatus = (Get-View $VM.Id -Property Guest).Guest.ToolsStatus
 		
@@ -1199,19 +1233,19 @@ Function Update-VMWareTools{
 		Else
 		{
 			
-			If ($I -eq 60)
+			If ($I -eq 180)
 			{
 				
 				Write-Richtext -LogType 'Error' -LogMsg "VMTools are taking too long to update. please investigate."
 				Return $false
 			}
 			
-			Write-Richtext -LogType 'Informational' -LogMsg "Waiting on tools to update. Sleeping for 30 seconds..."
-			Start-sleep -Seconds 30
+			Write-Richtext -LogType 'Informational' -LogMsg "Waiting on tools to update. Sleeping for 10 seconds... Loop ($i of 180)"
+			Start-sleep -Seconds 10
 		}
 	}
 	
-	Make-Annotations -VM $Global:VMCreationSelections.VM
+	Make-Annotations -VM $Global:VM
 }
 
 Function Make-Annotations{
@@ -1258,7 +1292,7 @@ Function Make-Annotations{
 		Write-RichText -LogType 'informational' -LogMsg "Notes Annotation Set."
 	}
 	
-	Wait-ForGuest -VM $VM -LocalCredential $Global:VMCreationSelections.localadmincreds
+	Wait-ForGuest -VM $VM -LocalCredential $Global:LocalAdminCreds
 
 }
 
@@ -1288,9 +1322,9 @@ Function Wait-ForGuest{
 	)
 	
 	Write-Richtext -LogType 'Informational' -LogMsg "Waiting for guest operations to be ready..."
-	Start-sleep -Seconds 30
+	Start-sleep -Seconds 10
 	
-	for ($i = 1; $i -le 60; $i++)
+	for ($i = 1; $i -le 180; $i++)
 	{
 		
 		#Check for the GuestOS Status
@@ -1306,15 +1340,15 @@ Function Wait-ForGuest{
 		Else
 		{
 			
-			If ($I -eq 60)
+			If ($I -eq 180)
 			{
 				
 				Write-Richtext -LogType 'Error' -LogMsg "OS Never became ready. Please investigate"
 				Return
 			}
 			
-			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for OS to become ready. Sleeping for 30 seconds..."
-			Start-sleep -Seconds 30
+			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for OS to become ready. Sleeping for 10 seconds... Loop ($i of 180)"
+			Start-sleep -Seconds 10
 		}
 	}
 	
@@ -1352,7 +1386,7 @@ Function Set-IPInfo{
 	
 	$DefaultGateway = $Octet1Textbox.text + "." + $Octet2Textbox.text + "." + $Octet3Textbox.text + "." + "208"
 	
-	$IP = $Global:VMCreationSelections.Fullip
+	$IP = $Global:fullip
 	
 	Write-RichText -LogType 'informational' -LogMsg "Setting IP and Default Gateway in Guest OS."
 	
@@ -1396,7 +1430,7 @@ Function Set-DNSInfo{
 		[System.Management.Automation.PSCredential]$LocalCredential
 	)
 	
-	switch ($Global:VMCreationSelections.vcenterServer)
+	switch ($Global:VCenterServer)
 	{
 		'AM1-VCENTER' {
 			$DNSString = '158.53.83.125,158.53.83.126'
@@ -1421,7 +1455,7 @@ Function Set-DNSInfo{
 	
 	Enable-Remoting -VM $VM `
 					-LocalCredential $LocalCredential `
-					-IP $Global:VMCreationSelections.fullip
+					-IP $Global:fullip
 	
 }
 
@@ -1501,16 +1535,16 @@ Function Enable-Remoting{
 	Write-RichText -LogType 'Success' -LogMsg 'WSMAN Configured.'
 	
 	$Remoting = Invoke-Command -Computername $IP `
-							   -Credential $Credential `
+							   -Credential $LocalCredential `
 							   -Scriptblock { Return hostname }
 	
-	If ($Remoting -eq $($Global:VMCreationSelections.Name))
+	If ($Remoting -eq $($Global:VMName))
 	{
 		Write-RichText -LogType 'Success' -LogMsg "Remoting is successfully enabled!"
 		
 		JoinTo-Domain -VM $VM `
 					  -LocalCredential $LocalCredential `
-					  -DomainCredential $Script:Credentials `
+					  -DomainCredential $Global:DomainCredentials `
 					  -IP $IP
 	}
 	
@@ -1618,9 +1652,9 @@ Function Wait-ForReboot{
 	)
 	
 	Write-Richtext -LogType 'Informational' -LogMsg "Waiting for reboot to complete. Sleeping for 30 seconds..."
-	Start-sleep -Seconds 30
+	Start-sleep -Seconds 10
 	
-	for ($i = 1; $i -le 60; $i++)
+	for ($i = 1; $i -le 180; $i++)
 	{
 		
 		#Check for the GuestOS Status
@@ -1636,15 +1670,15 @@ Function Wait-ForReboot{
 		Else
 		{
 			
-			If ($I -eq 60)
+			If ($I -eq 180)
 			{
 				
 				Write-Richtext -LogType 'Error' -LogMsg "Reboot never completed. Please investigate"
 				Return
 			}
 			
-			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for reboot to complete. Sleeping for 30 seconds..."
-			Start-sleep -Seconds 30
+			Write-Richtext -LogType 'Informational' -LogMsg "Waiting for reboot to complete. Sleeping for 10 seconds... Loop ($i of 180)"
+			Start-sleep -Seconds 10
 		}
 	}
 	
@@ -1776,12 +1810,12 @@ Function Invoke-Changes{
 		
 		If ($ApplicationLog -eq 100663296)
 		{
-			Write-Log -Message "Step 3 - Set Event Log Size (Application Log) = SUCCESS"
+			Write-Log -Message "Step 3a - Set Event Log Size (Application Log) = SUCCESS"
 		}
 		
 		Else
 		{
-			Write-Log -Message "Step 3 - Set Event Log Size (Application Log) = FAILURE"
+			Write-Log -Message "Step 3a - Set Event Log Size (Application Log) = FAILURE"
 		}
 		
 		
@@ -1795,12 +1829,12 @@ Function Invoke-Changes{
 		
 		If ($SecurityLog -eq 100663296)
 		{
-			Write-Log -Message "Step 3 - Set Event Log Size (Security Log) = SUCCESS"
+			Write-Log -Message "Step 3b - Set Event Log Size (Security Log) = SUCCESS"
 		}
 		
 		Else
 		{
-			Write-Log -Message "Step 3 - Set Event Log Size (Security Log) = FAILURE"
+			Write-Log -Message "Step 3b - Set Event Log Size (Security Log) = FAILURE"
 		}
 		
 		New-ItemProperty -Path 'HKLM:\System\CurrentControlSet\Services\Eventlog\System' `
@@ -1813,12 +1847,12 @@ Function Invoke-Changes{
 		
 		If ($SystemLog -eq 100663296)
 		{
-			Write-Log -Message "Step 3 - Set Event Log Size (System Log) = SUCCESS"
+			Write-Log -Message "Step 3c - Set Event Log Size (System Log) = SUCCESS"
 		}
 		
 		Else
 		{
-			Write-Log -Message "Step 3 - Set Event Log Size (System Log) = Failure"
+			Write-Log -Message "Step 3c - Set Event Log Size (System Log) = Failure"
 		}
 		
 		#endregion
@@ -2009,16 +2043,53 @@ Function Invoke-Changes{
 		
 		#endregion
 		
-		#region Step 19 - Rename Admin Account#
+		#region Step 19 - Set Terminal Services Timeouts
+		
+		Set-ItemProperty -Path 'HKLM:\SYSTEM\ControlSet001\Control\Terminal Server\Winstations\RDP-Tcp' `
+						 -Name MaxDisconnectionTime `
+						 -Value 86400000 `
+						 -Force
+		
+		Set-ItemProperty -Path 'HKLM:\SYSTEM\ControlSet001\Control\Terminal Server\Winstations\RDP-Tcp' `
+						 -Name MaxIdleTime `
+						 -Value 7200000 `
+						 -Force
+		
+		Write-Log -Message "Step 19 - Set Terminal Services Timeouts = SUCCESS"
+		
+		#endregion
+		
+		#region Step 20 - Initialize Extra Disks
+		
+		Set-StorageSetting -NewDiskPolicy OnlineAll
+		
+		Get-Disk | Where-Object partitionstyle -EQ 'raw' | `
+		Initialize-Disk -PartitionStyle GPT -PassThru | `
+		New-Partition -AssignDriveLetter:$false -UseMaximumSize | `
+		Format-Volume -FileSystem NTFS -AllocationUnitSize 65536 -Force -Confirm:$False
+		
+		Write-Log "Step 20 - Initialize Extra Disks = SUCCESS"
+		
+		#endregion
+		
+		#region Step 21 - Rename NIC
+		
+		NetSH interface set interface name="Ethernet" newname="Production NIC"
+		
+		Write-Log "Step 21 - Rename NIC to Production NIC = SUCCESS"
+		
+		#endregion
+		
+		#region Step 22 - Rename Admin Account#
 		
 		$admin = [adsi]("WinNT://./administrator, user")
 		$admin.psbase.rename("WC")
 		
-		Write-Log -Message "Step 19 - Rename Admin Account to 'WC' = SUCCESS"
+		Write-Log -Message "Step 22 - Rename Admin Account to 'WC' = SUCCESS"
 		
 		#endregion
 		
-		#region Step 20 - Creates Dummy Admin#
+		#region Step 23 - Creates Dummy Admin#
 		
 		$computer = [ADSI]"WinNT://."
 		$user = $computer.Create("user", "Administrator")
@@ -2027,7 +2098,7 @@ Function Invoke-Changes{
 		$user.psbase.InvokeSet('AccountDisabled', $true)
 		$user.SetInfo()
 		
-		Write-Log -Message "Step 20 - Create Dummy Admin = SUCCESS"
+		Write-Log -Message "Step 23 - Create Dummy Admin = SUCCESS"
 		
 		#endregion
 		
@@ -2041,7 +2112,18 @@ Function Invoke-Changes{
 
 	Foreach ($Line in $Results)
 	{
-		Write-RichText -LogType 'informational' -LogMsg $Line
+		If ($Line -like '*Step*'){
+			
+			If ($Line -like '*SUCCESS*'){
+				
+				Write-RichText -LogType 'Success' -LogMsg $Line
+			}
+			
+			Else{
+				
+				Write-RichText -LogType 'Error' -LogMsg $Line
+			}
+		}
 	}
 	
 	#endregion

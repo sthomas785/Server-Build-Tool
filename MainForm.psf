@@ -1952,47 +1952,49 @@ function Load-ComboBox
 
 $Form_Load = {
 }
-#Called when user selected a VCenter Server.
-$VCenterComboBox_SelectedIndexChanged={
-	$Global:VMCreationSelections.VCenterServer = $($VCenterComboBox.SelectedItem)
+
+#Called when user selects a VCenter Server.
+$VCenterComboBox_SelectedIndexChanged = {
+	
+	$Global:VCenterServer = $($VCenterComboBox.SelectedItem)
 	Write-RichText -LogType 'Informational' -LogMsg "Please Provide domain admin credentials in the form of WCNET\XXXX-ADM"
-	$Script:Credentials = Get-Credential
-	ConnectTo-VCenter
+	$Global:DomainCredentials = Get-Credential
+	ConnectTo-VCenter -Server $Global:VCenterServer -DomainCredential $Global:DomainCredentials
 	
 }
 
 #Called when user selects a local office / datacenter.
 $LocalOfficeSelectionComboBox_SelectedIndexChanged = {
 	
-	$Global:VMCreationSelections.Location = $($LocalOfficeSelectionComboBox.SelectedItem)
+	$Global:Location = $($LocalOfficeSelectionComboBox.SelectedItem)
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving ESX Clusters please be patient."
-	Populate-ESXClustersDropDown
+	Populate-ESXClustersDropDown -Server $Global:VCenterServer -Location $Global:Location
 	
 }
 
 #Called when user selects a ESX CLuster or host.
 $ESXClustersComboBox_SelectedIndexChanged={
-	$Clusters = Get-Cluster -Server $Global:VMCreationSelections.VCenterServer `
-							-location $Global:VMCreationSelections.Location `
+	
+	$Clusters = Get-Cluster -Server $Global:VCenterServer `
+							-location $Global:Location `
 							-Name $ESXClustersComboBox.SelectedItem
 	If ($Clusters)
 	{
-		$Global:VMCreationSelections.ResourcePool = $Clusters
+		$Global:ResourcePool = $Clusters
 	}
 	
 	Else
 	{
-		$VMHosts = Get-VMHost -Server $Global:VMCreationSelections.VCenterServer `
-							  -location $Global:VMCreationSelections.Location `
+		$VMHosts = Get-VMHost -Server $Global:VCenterServer `
+							  -location $Global:Location `
 							  -Name $ESXClustersComboBox.SelectedItem
 		
-		$Global:VMCreationSelections.ResourcePool = $VMHosts
+		$Global:ResourcePool = $VMHosts
 	}
 	
-	Write-Debug -Message "Location = $($Global:VMCreationSelections.ResourcePool)"
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Datastores please be patient."
 	
-	Populate-DatastoreClusterDropDown
+	Populate-DatastoreClusterDropDown -ResourcePool $Global:ResourcePool
 	
 }
 
@@ -2001,48 +2003,48 @@ $DataStoreClusterComboBox_SelectedIndexChanged = {
 	
 	$ErrorActionPreference = 'SilentlyContinue'
 	
-	$DataStoreClusters = Get-DataStoreCluster -Server $Global:VMCreationSelections.VCenterServer `
-											  -Location $Global:VMCreationSelections.Location `
+	$DataStoreClusters = Get-DataStoreCluster -Server $Global:VCenterServer `
+											  -Location $Global:Location `
 											  -Name $DataStoreClusterComboBox.SelectedItem
 	
 	If ($DataStoreClusters)
 	{
-		$Global:VMCreationSelections.Datastore = $DataStoreClusters
+		$Global:Datastore = $DataStoreClusters
 	}
 	
 	Else
 	{
-		$DataStores = Get-DataStore -Server $Global:VMCreationSelections.VCenterServer `
-									-Location $Global:VMCreationSelections.Location `
+		$DataStores = Get-DataStore -Server $Global:VCenterServer `
+									-Location $Global:Location `
 									-name $DataStoreClusterComboBox.SelectedItem
 		
-		$Global:VMCreationSelections.Datastore = $DataStores
+		$Global:Datastore = $DataStores
 	}
 	
 	$ErrorActionPreference = 'Continue'
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Templates please be patient."
 	
-	Populate-TemplateDropDown
+	Populate-TemplateDropDown -Server $Global:VCenterServer -Location $Global:Location
 	
 }
 
 #Called when user selects a template.
 $TemplateSelectionComboBox_SelectedIndexChanged={
 	
-	$Global:VMCreationSelections.Template = Get-Template -Server $Global:VMCreationSelections.VCenterServer `
-														 -Location $Global:VMCreationSelections.Location `
-														 -Name $TemplateSelectionComboBox.SelectedItem
+	$Global:Template = Get-Template -Server $Global:VCenterServer `
+									-Location $Global:Location `
+									-Name $TemplateSelectionComboBox.SelectedItem
 	
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Customizations please be patient."
-	Populate-CustomizationDropDown
+	Populate-CustomizationDropDown -Server $Global:VCenterServer
 	
 }
 
 #Called when user selects a customization.
 $CustomizationSelectioncomboBox_SelectedIndexChanged = {
 	
-	$Global:VMCreationSelections.OSCustomizationSpec = Get-OSCustomizationSpec -Server $Global:VMCreationSelections.VCenterServer `
-																			   -Name $CustomizationSelectioncomboBox.SelectedItem
+	$Global:OSCustomizationSpec = Get-OSCustomizationSpec -Server $Global:VCenterServer `
+														  -Name $CustomizationSelectioncomboBox.SelectedItem
 	
 	$VMnameInputBox.Enabled = $true
 }
@@ -2050,7 +2052,7 @@ $CustomizationSelectioncomboBox_SelectedIndexChanged = {
 #Called when user inputs a VM name.
 $VMnameInputBox_TextChanged={
 	
-	$Global:VMCreationSelections.Name = $VMnameInputBox.Text
+	$Global:VMName = $VMnameInputBox.Text
 	Enable-HardwareGroupBox
 	Enable-NetworkingGroupBox
 	
@@ -2166,14 +2168,16 @@ $ExtraDriveCounter_ValueChanged={
 	
 }
 
+#Called when user puts data in the 4th octet textbox.
 $octet4Textbox_TextChanged = {
 	
 	$CompleteProcessButton.Enabled = $true
 	
 }
 
+#Called when user selects a Portgroup.
 $PortGroupComboBox_SelectedIndexChanged = {
-	Set-VMPortGroup -VM $Global:VMCreationSelections.vm -PortGroup $PortGroupComboBox.SelectedItem
+	Set-VMPortGroup -VM $Global:VM -PortGroup $PortGroupComboBox.SelectedItem
 }
 
 #Called when user clicks the Complete Process button.
@@ -2182,14 +2186,14 @@ $CompleteProcessButton_Click = {
 	Write-RichText -LogType 'informational' -LogMsg "Prompting for the local admin credentials for the VM..."
 	
 	$Credential = Get-Credential
-	$Global:VMCreationSelections.localadmincreds = $Credential
+	$Global:LocalAdminCreds = $Credential
 	
 	Create-VM
 	
 }
 
 ]]></Code>
-  <Mode>0</Mode>
+  <Mode>1</Mode>
   <Assemblies>
     <Assembly>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
     <Assembly>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
