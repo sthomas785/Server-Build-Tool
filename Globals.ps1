@@ -36,29 +36,76 @@ Function ConnectTo-VCenter{
 #>
 	
 	param(
-		
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$Server,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$DomainCredential
 	
 	)
 	
 	Write-RichText -LogType 'Informational' -LogMsg "Connecting to $Server please be patient."
+	
 	$Connection = Connect-VIServer -Server $Server `
 								   -Credential $DomainCredential
 	
-	If (!$Connection)
-	{
+	If (!$Connection){
+		
 		Write-Richtext -LogType 'Error' -LogMsg "Unable to connect to $Server ¯\_(ツ)_/¯."
 		return;
 	}
 	
-	Else
-	{
+	Else{
+		
 		Write-Richtext -LogType 'Success' -LogMsg "Connected to $Server."
 		Write-Richtext -LogType 'Informational' -LogMsg "Retrieving Local Offices please be patient."
 		
 		Populate-LocalOfficeDropDown -Server $Server
 	}
+}
+
+Function Populate-LocalOfficeDropDown{
+<#
+	.SYNOPSIS
+		Function to populate the local office dropdown.
+	
+	.DESCRIPTION
+		Function connects to VCenter and retrieves a list of local offices
+		and datacenters available for that region.
+	
+	.EXAMPLE
+		PS C:\> Populate-LocalOfficeDropDown
+	
+	.NOTES
+		N/A
+#>
+	
+	param
+	(
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[String]$Server
+	)
+	
+	$LocalOffices = Get-Datacenter -Server $Server
+	
+	If (!$LocalOffices){
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather Local Offices."
+		Return
+	}
+	
+	Else{
+		
+		Write-Richtext -LogType 'Success' -LogMsg "Local Offices retrieved successfully."
+		
+		$LocalOfficeSelectioncomboBox.Items.clear()
+		
+		Foreach ($Office in $LocalOffices){
+			
+			$LocalOfficeSelectioncomboBox.Items.Add($Office)
+		}
+		
+		$LocalOfficeSelectioncomboBox.enabled = $True
+	}
+	
 }
 
 Function Populate-TemplateDropDown{
@@ -78,8 +125,9 @@ Function Populate-TemplateDropDown{
 #>
 	
 	param (
-		
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$Server,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$Location
 		
 	)
@@ -106,51 +154,6 @@ Function Populate-TemplateDropDown{
 	}
 }
 
-Function Populate-LocalOfficeDropDown{
-<#
-	.SYNOPSIS
-		Function to populate the local office dropdown.
-	
-	.DESCRIPTION
-		Function connects to VCenter and retrieves a list of local offices
-		and datacenters available for that region.
-	
-	.EXAMPLE
-		PS C:\> Populate-LocalOfficeDropDown
-	
-	.NOTES
-		N/A
-#>
-	
-	param
-	(
-		[String]$Server
-	)
-	
-	$LocalOffices = Get-Datacenter -Server $Server
-	
-	If (!$LocalOffices)
-	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather Local Offices."
-		Return
-	}
-	
-	Else
-	{
-		Write-Richtext -LogType 'Success' -LogMsg "Local Offices retrieved successfully."
-		
-		$LocalOfficeSelectioncomboBox.Items.clear()
-		
-		Foreach ($Office in $LocalOffices)
-		{
-			$LocalOfficeSelectioncomboBox.Items.Add($Office)
-		}
-		
-		$LocalOfficeSelectioncomboBox.enabled = $True
-	}
-	
-}
-
 Function Populate-CustomizationDropDown{
 <#
 	.SYNOPSIS
@@ -168,6 +171,7 @@ Function Populate-CustomizationDropDown{
 	
 	param
 	(
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$Server
 	)
 	
@@ -210,8 +214,9 @@ Function Populate-ESXClustersDropDown{
 #>
 	
 	param (
-		
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$Server,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$Location
 		
 	)
@@ -281,6 +286,7 @@ Function Populate-DatastoreClusterDropDown{
 	
 	param
 	(
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		$ResourcePool
 	)
 	
@@ -344,7 +350,7 @@ Function Populate-PortGroupCombobox{
 		N/A
 #>	
 	param (
-		[parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[Array]$Portgroups
 	)
 	$PortGroupcombobox.Items.clear()
@@ -759,9 +765,9 @@ Function Set-VMCPUCount{
 		N/A
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[Int]$NumCPU
 	)
 	
@@ -805,9 +811,9 @@ Function Set-VMRamAmount{
 		N/A
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[Int]$MemoryGB
 	)
 	
@@ -847,8 +853,7 @@ Function Add-VMDIsks{
 		N/A
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
@@ -900,7 +905,7 @@ Function Validate-IPAddress{
 #>
 	
 	param (
-		[parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
@@ -941,7 +946,7 @@ Function Determine-Portgroup{
 		N/A
 #>
 	param (
-		[parameter(Mandatory = $true)]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
@@ -1008,9 +1013,9 @@ Function Set-VMPortGroup{
 		N/A
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$PortGroup
 	)
 	
@@ -1051,6 +1056,7 @@ Function Start-VirtualMachine{
 		N/A
 #>
 	param (
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
@@ -1083,8 +1089,7 @@ Function Wait-ForCustomizationCompletion{
 		Get-VIEvent	commandlet which made this problem solvable.
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
@@ -1185,8 +1190,7 @@ Function Update-VMWareTools{
 		(WTF VMware) or nothing worked until i rebooted anyway.
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
@@ -1269,8 +1273,7 @@ Function Make-Annotations{
 		to each environment.
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM
 	)
 	
@@ -1315,9 +1318,9 @@ Function Wait-ForGuest{
 		I'm not 100% sold on this being the best way to do this but its what i have to work with right now.
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential
 	)
 	
@@ -1378,9 +1381,9 @@ Function Set-IPInfo{
 		I hate Invoke-VMScript. It really sucks This function also calls Set-DNSInfo.
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential
 	)
 	
@@ -1424,9 +1427,9 @@ Function Set-DNSInfo{
 		N/A
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential
 	)
 	
@@ -1483,10 +1486,11 @@ Function Enable-Remoting{
 		N/A
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential,
+		[Parameter(Mandatory = $true, Position = 2, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$IP
 	)
 	
@@ -1586,11 +1590,13 @@ Function JoinTo-Domain{
 		as the credentials change all the time. and i can't pass a stupid credential object. [#TODO]
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential,
+		[Parameter(Mandatory = $true, Position = 2, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$DomainCredential,
+		[Parameter(Mandatory = $true, Position = 3, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$IP
 	)
 	
@@ -1644,10 +1650,11 @@ Function Wait-ForReboot{
 		I'm not 100% sold on this being the best way to do this but its what i have to work with right now.
 #>
 	param (
-		[Parameter(Mandatory = $true)]
-		[ValidateNotNullOrEmpty()]
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential,
+		[Parameter(Mandatory = $true, Position = 2, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$IP
 	)
 	
@@ -1708,7 +1715,9 @@ Function Verify-Domain{
 		N/A
 #>
 	param (
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$IP
 	)
 	
@@ -1740,7 +1749,9 @@ Function Verify-Domain{
 Function Invoke-Changes{
 	param
 	(
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$LocalCredential,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[String]$IP
 	)
 	
