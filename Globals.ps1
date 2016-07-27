@@ -14,6 +14,7 @@ $Global:OSCustomizationSpec = ""
 $Global:VM = ""
 $Global:FullIP = ""
 $Global:LocalAdminCreds = ""
+$Global:FolderObject = ""
 
 [Int]$Global:DriveCounter = 0
 [Array]$Global:DriveLetterarray = @('', 'a', 'b', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z')
@@ -361,6 +362,38 @@ Function Populate-PortGroupCombobox{
 	}
 	
 	$PortGroupcombobox.enabled = $True
+}
+
+Function Populate-FolderDropDown{
+<#
+	.SYNOPSIS
+		Function to Populate the Portgroup Combobox.
+	
+	.DESCRIPTION
+		This function is only called if more than one portgroup was matched
+		during the automatic filtering process. It simply takes the multiple
+		portgroups that were matched and fills in the dropdown.
+	
+	.PARAMETER Portgroups
+		Takes a collection of Portgroup objects.
+	
+	.EXAMPLE
+		PS C:\> Populate-DatastoreClusterDropDown -Portgroups $Portgroups
+	
+	.NOTES
+		N/A
+#>	
+	
+	$Folders = Get-Folder -Location $Global:Location | Where-Object {$_.Type -eq 'VM'} | Sort-Object
+	
+	$Foldercombobox.Items.clear()
+	
+	Foreach ($Item in $Folders)
+	{
+		$Foldercombobox.Items.Add($Item.name)
+	}
+	
+	$Foldercombobox.enabled = $True
 }
 
 Function Control-VisibleExtraDrives{
@@ -733,11 +766,39 @@ Function Create-VM{
 		
 		$Global:VM = $VM
 		
-		Set-VMCPUCount -VM $VM `
-					   -NumCPU $VCPUsComboBox.SelectedItem
+		Change-VMFolder -VM $VM -Folder $Global:FolderObject
 		
 	}
 	
+}
+
+Function Change-VMFolder{
+	param (
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		$Folder
+	)
+	
+	Write-RichText -LogType 'informational' -LogMsg "Moving the VM from the Root Folder to $($Folder.name)"
+	
+	Move-VM -VM $VM -Destination $Folder
+	
+	$NewVM = Get-VM -Name $VM.name
+	
+	If ($NewVM.folder.name -eq $Folder.name)
+	{
+		Write-RichText -LogType 'Success' -LogMsg "VM Successfully Moved."
+		$Global:VM = $NewVM
+		
+		Set-VMCPUCount -VM $Global:VM `
+					   -NumCPU $VCPUsComboBox.SelectedItem
+	}
+	
+	Else
+	{
+		Write-RichText -LogType 'Error' -LogMsg "Failed to Move VM."	
+	}
 }
 
 Function Set-VMCPUCount{
@@ -1236,8 +1297,12 @@ Function Update-VMWareTools{
 		
 		Else
 		{
+			If ($i -eq 60)
+			{
+				Update-tools -VM $VM
+			}
 			
-			If ($I -eq 180)
+			ElseIf ($I -eq 180)
 			{
 				
 				Write-Richtext -LogType 'Error' -LogMsg "VMTools are taking too long to update. please investigate."
