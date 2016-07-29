@@ -1232,16 +1232,6 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="DropDownStyle">DropDownList</Property>
         <Property name="Enabled">False</Property>
         <Property name="FormattingEnabled">True</Property>
-        <Property name="Items">
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">16</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">32</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">64</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">128</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">256</Item>
-        </Property>
         <Property name="Location">11, 47</Property>
         <Property name="Name">foldercombobox</Property>
         <Property name="Size">315, 25</Property>
@@ -1440,7 +1430,11 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Items">
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">6</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">10</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">12</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">14</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">16</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">32</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">64</Item>
@@ -2144,22 +2138,31 @@ $LocalOfficeSelectionComboBox_SelectedIndexChanged = {
 
 #Called when user selects a ESX CLuster or host.
 $ESXClustersComboBox_SelectedIndexChanged={
-	
+
 	$Clusters = Get-Cluster -Server $Global:VCenterServer `
 							-location $Global:Location `
-							-Name $ESXClustersComboBox.SelectedItem
-	If ($Clusters)
-	{
+							-Name $ESXClustersComboBox.SelectedItem `
+							-ErrorAction SilentlyContinue `
+							-ErrorVariable ESXClustersErrors
+	
+	$VMHosts = Get-VMHost -Server $Global:VCenterServer `
+						  -location $Global:Location `
+						  -Name $ESXClustersComboBox.SelectedItem `
+						  -ErrorAction SilentlyContinue `
+						  -ErrorVariable ESXHostsErrors
+	
+	If ($Clusters){
 		$Global:ResourcePool = $Clusters
 	}
 	
-	Else
-	{
-		$VMHosts = Get-VMHost -Server $Global:VCenterServer `
-							  -location $Global:Location `
-							  -Name $ESXClustersComboBox.SelectedItem
-		
+	ElseIf($VMHosts){
 		$Global:ResourcePool = $VMHosts
+	}
+	
+	Else{
+		Write-RichText -LogType 'error' -LogMsg "Unable to find the selected ESXhost or cluster."
+		Write-RichText -LogType 'error' -LogMsg $ESXClustersErrors
+		Write-RichText -LogType 'error' -LogMsg $ESXHostsErrors
 	}
 	
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Datastores please be patient."
@@ -2175,23 +2178,30 @@ $DataStoreClusterComboBox_SelectedIndexChanged = {
 	
 	$DataStoreClusters = Get-DataStoreCluster -Server $Global:VCenterServer `
 											  -Location $Global:Location `
-											  -Name $DataStoreClusterComboBox.SelectedItem
+											  -Name $DataStoreClusterComboBox.SelectedItem `
+											  -ErrorAction SilentlyContinue `
+											  -ErrorVariable DataStoreClustersErrors
 	
-	If ($DataStoreClusters)
-	{
+	$DataStores = Get-DataStore -Server $Global:VCenterServer `
+								-Location $Global:Location `
+								-name $DataStoreClusterComboBox.SelectedItem `
+								-ErrorAction SilentlyContinue `
+								-ErrorVariable DataStoresErrors
+		
+	If ($DataStoreClusters){
 		$Global:Datastore = $DataStoreClusters
 	}
 	
-	Else
-	{
-		$DataStores = Get-DataStore -Server $Global:VCenterServer `
-									-Location $Global:Location `
-									-name $DataStoreClusterComboBox.SelectedItem
-		
+	elseif($DataStores){
 		$Global:Datastore = $DataStores
 	}
 	
-	$ErrorActionPreference = 'Continue'
+	Else{
+		Write-RichText -LogType 'error' -LogMsg "Unable to find the selected Datastore or Datastore Cluster."
+		Write-RichText -LogType 'error' -LogMsg $DataStoreClustersErrors
+		Write-RichText -LogType 'error' -LogMsg $DataStoresErrors
+	}
+	
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Templates please be patient."
 	
 	Populate-TemplateDropDown -Server $Global:VCenterServer -Location $Global:Location
@@ -2363,12 +2373,14 @@ $foldercombobox_SelectedIndexChanged={
 	
 }
 
+#Called when user selects a the amount of RAM.
 $RAMComboBox_SelectedIndexChanged={
-
-	Populate-FolderDropDown
+	
+	$Folders = Get-Folder -Location $Global:Location | Where-Object { $_.Type -eq 'VM' } | Sort-Object
+	Populate-ComboBox -Combobox $foldercombobox -Items $Folders.name
 }
 ]]></Code>
-  <Mode>1</Mode>
+  <Mode>0</Mode>
   <Assemblies>
     <Assembly>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
     <Assembly>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>

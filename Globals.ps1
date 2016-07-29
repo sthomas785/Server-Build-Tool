@@ -45,23 +45,44 @@ Function ConnectTo-VCenter{
 	)
 	
 	Write-RichText -LogType 'Informational' -LogMsg "Connecting to $Server please be patient."
-	
-	$Connection = Connect-VIServer -Server $Server `
-								   -Credential $DomainCredential
-	
-	If (!$Connection){
-		
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to connect to $Server ¯\_(ツ)_/¯."
+	Try
+	{
+		Connect-VIServer -Server $Server -Credential $DomainCredential -ErrorAction Stop
+	}
+	Catch
+	{
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to connect to $Server : $($Error[0])"
 		return;
 	}
+
+		
+	Write-Richtext -LogType 'Success' -LogMsg "Connected to $Server."
 	
-	Else{
-		
-		Write-Richtext -LogType 'Success' -LogMsg "Connected to $Server."
-		Write-Richtext -LogType 'Informational' -LogMsg "Retrieving Local Offices please be patient."
-		
-		Populate-LocalOfficeDropDown -Server $Server
+	Populate-LocalOfficeDropDown -Server $Server
+	
+}
+
+Function Populate-ComboBox{
+	Param
+	(
+		[System.Windows.Forms.ComboBox]$Combobox,
+		[Array]$Items,
+		[Bool]$Clear
+	)
+	
+	If ($Clear)
+	{
+		$Combobox.Items.clear()
 	}
+	
+	Foreach ($Item in $Items)
+	{
+		
+		$Combobox.Items.Add($item)
+	}
+	
+	$Combobox.enabled = $True
+	
 }
 
 Function Populate-LocalOfficeDropDown{
@@ -86,26 +107,22 @@ Function Populate-LocalOfficeDropDown{
 		[String]$Server
 	)
 	
-	$LocalOffices = Get-Datacenter -Server $Server
+	Write-Richtext -LogType 'Informational' -LogMsg "Retrieving Local Offices please be patient."
 	
-	If (!$LocalOffices){
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather Local Offices."
-		Return
+	Try
+	{
+		$LocalOffices = Get-Datacenter -Server $Server -ErrorAction Stop
 	}
 	
-	Else{
-		
-		Write-Richtext -LogType 'Success' -LogMsg "Local Offices retrieved successfully."
-		
-		$LocalOfficeSelectioncomboBox.Items.clear()
-		
-		Foreach ($Office in $LocalOffices){
-			
-			$LocalOfficeSelectioncomboBox.Items.Add($Office)
-		}
-		
-		$LocalOfficeSelectioncomboBox.enabled = $True
+	Catch
+	{
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather Local Offices : $($Error[0])"
+		Return;
 	}
+	
+	Write-Richtext -LogType 'Success' -LogMsg "Local Offices retrieved successfully."
+	Populate-ComboBox -Combobox $LocalOfficeSelectioncomboBox -Items $LocalOffices -Clear $true
+	$LocalOfficeSelectioncomboBox.enabled = $True
 	
 }
 
@@ -132,27 +149,21 @@ Function Populate-TemplateDropDown{
 		[String]$Location
 		
 	)
-	$Templates = Get-Template -Server $Server `
-							  -Location $Location
 	
-	If (!$Templates)
+	Try
 	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather templates from $Server."
+		$Templates = Get-Template -Server $Server -Location $Location -ErrorAction Stop
 	}
 	
-	Else
+	Catch
 	{
-		Write-Richtext -LogType 'Success' -LogMsg "Templates retrieved from $Server."
-		
-		$TemplateSelectionComboBox.Items.clear()
-		
-		Foreach ($Template in $Templates)
-		{
-			$TemplateSelectionComboBox.Items.Add($Template)
-		}
-		
-		$TemplateSelectionComboBox.enabled = $True
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather templates from $Server : $($Error[0])"
 	}
+	
+	Write-Richtext -LogType 'Success' -LogMsg "Templates retrieved from $Server."
+	Populate-ComboBox -Combobox $TemplateSelectionComboBox -Items $Templates -Clear $true
+	$TemplateSelectionComboBox.enabled = $True
+	
 }
 
 Function Populate-CustomizationDropDown{
@@ -176,24 +187,20 @@ Function Populate-CustomizationDropDown{
 		[String]$Server
 	)
 	
-	$Customizations = Get-OSCustomizationSpec -Server $Server
-	
-	If (!$Customizations)
+	Try
 	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather customizations."
+		$Customizations = Get-OSCustomizationSpec -Server $Server -ErrorAction Stop
 	}
 	
-	Else
+	Catch
 	{
-		Write-Richtext -LogType 'Success' -LogMsg "Customizations retrieved successfully."
-		$CustomizationSelectioncomboBox.Items.clear()
-		Foreach ($Item in $Customizations)
-		{
-			$CustomizationSelectioncomboBox.Items.Add($($Item.name))
-		}
-		
-		$CustomizationSelectioncomboBox.enabled = $True
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather customizations : $($Error[0])"
 	}
+	
+	Write-Richtext -LogType 'Success' -LogMsg "Customizations retrieved successfully."
+	Populate-ComboBox -Combobox $CustomizationSelectioncomboBox -Items $Customizations.name -Clear $true
+	$CustomizationSelectioncomboBox.enabled = $True
+
 }
 
 Function Populate-ESXClustersDropDown{
@@ -222,42 +229,30 @@ Function Populate-ESXClustersDropDown{
 		
 	)
 	
-	$ErrorActionPreference = 'SilentlyContinue'
-	
-	$Clusters = Get-Cluster -Server $Server `
-							-location $Location
-	
-	$VMHosts = Get-VMHost -Server $Server `
-						  -location $Location
-	
-	$ErrorActionPreference = 'Continue'
-	
-	If (!$Clusters -and !$VMHosts)
+	$Clusters = Get-Cluster -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable ClustersError
+	$VMHosts = Get-VMHost -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable HostsError
+
+	If ($ClustersError -and $HostsError)
 	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather ESX Hosts or Clusters."
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather ESX Hosts and Clusters."
+		Write-Richtext -LogType 'Error' -LogMsg $ClustersError
+		Write-Richtext -LogType 'Error' -LogMsg $HostsError
+		Return;
 	}
 	
-	Else
-	{
-		Write-Richtext -LogType 'Success' -LogMsg "Clusters retrieved successfully."
-		$ESXClustersComboBox.Items.clear()
-		
-		If ($Clusters)
-		{
-			Foreach ($Item in $Clusters)
-			{
-				$ESXClustersComboBox.Items.Add($($Item.name))
-			}
-		}
-		If ($VMHosts)
-		{
-			Foreach ($Item in $VMHosts)
-			{
-				$ESXClustersComboBox.Items.Add($($Item.name))
-			}
-		}
-		$ESXClustersComboBox.enabled = $True
+	Write-Richtext -LogType 'Success' -LogMsg "Clusters retrieved successfully."
+
+	$ESXClustersComboBox.Items.clear()
+	
+	If ($Clusters){
+		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $Clusters.name -Clear $False
 	}
+	
+	If ($VMHosts){
+		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $VMHosts.name -Clear $False
+	}
+	
+	$ESXClustersComboBox.enabled = $True
 	
 }
 
@@ -291,109 +286,30 @@ Function Populate-DatastoreClusterDropDown{
 		$ResourcePool
 	)
 	
-	$ErrorActionPreference = 'SilentlyContinue'
+	$DataStores = $ResourcePool | Get-Datastore -ErrorAction SilentlyContinue -ErrorVariable DataStoreErrors
+	$DataStoreClusters = $DataStores | Get-DatastoreCluster -ErrorAction SilentlyContinue -ErrorVariable DataStoreClustersErrors
 	
-	$DataStores = $ResourcePool | Get-Datastore
-	
-	$DataStoreClusters = $DataStores | Get-DatastoreCluster
-	
-	$ErrorActionPreference = 'Continue'
-	
-	
-	If (!$DataStoreClusters -and !$DataStores)
-	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to pull and DataStore Clusters or Datastores."
+	If ($DataStoreClustersErrors -and $DataStoresErrors){
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to pull and DataStore Clusters and Datastores."
+		Write-Richtext -LogType 'Error' -LogMsg $DataStoreClustersErrors
+		Write-Richtext -LogType 'Error' -LogMsg $DataStoreErrors
+		Return;
 	}
-	
-	Else
-	{
-		Write-Richtext -LogType 'Success' -LogMsg "DataStores or Clusters retrieved successfully."
-		
-		$DataStoreClusterComboBox.Items.clear()
-		
-		If ($DataStoreClusters)
-		{
-			Foreach ($Item in $DataStoreClusters)
-			{
-				$DataStoreClusterComboBox.Items.Add($Item.name)
-			}
-		}
-		
-		If ($DataStores)
-		{
-			Foreach ($Item in $DataStores)
-			{
-				$DataStoreClusterComboBox.Items.Add($Item.name)
-			}
-		}
-		$DataStoreClusterComboBox.enabled = $True
-	}
-	
-}
 
-Function Populate-PortGroupCombobox{
-<#
-	.SYNOPSIS
-		Function to Populate the Portgroup Combobox.
-	
-	.DESCRIPTION
-		This function is only called if more than one portgroup was matched
-		during the automatic filtering process. It simply takes the multiple
-		portgroups that were matched and fills in the dropdown.
-	
-	.PARAMETER Portgroups
-		Takes a collection of Portgroup objects.
-	
-	.EXAMPLE
-		PS C:\> Populate-DatastoreClusterDropDown -Portgroups $Portgroups
-	
-	.NOTES
-		N/A
-#>	
-	param (
-		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		[Array]$Portgroups
-	)
-	$PortGroupcombobox.Items.clear()
-	
-	Foreach ($Item in $PortGroups)
-	{
-		$PortGroupcombobox.Items.Add($Item.name)
+	Write-Richtext -LogType 'Success' -LogMsg "DataStores or Clusters retrieved successfully."
+		
+	$DataStoreClusterComboBox.Items.clear()
+		
+	If ($DataStoreClusters){
+		Populate-ComboBox -Combobox $DataStoreClusterComboBox -Items $DataStoreClusters.name -Clear $False
 	}
 	
-	$PortGroupcombobox.enabled = $True
-}
-
-Function Populate-FolderDropDown{
-<#
-	.SYNOPSIS
-		Function to Populate the Portgroup Combobox.
-	
-	.DESCRIPTION
-		This function is only called if more than one portgroup was matched
-		during the automatic filtering process. It simply takes the multiple
-		portgroups that were matched and fills in the dropdown.
-	
-	.PARAMETER Portgroups
-		Takes a collection of Portgroup objects.
-	
-	.EXAMPLE
-		PS C:\> Populate-DatastoreClusterDropDown -Portgroups $Portgroups
-	
-	.NOTES
-		N/A
-#>	
-	
-	$Folders = Get-Folder -Location $Global:Location | Where-Object {$_.Type -eq 'VM'} | Sort-Object
-	
-	$Foldercombobox.Items.clear()
-	
-	Foreach ($Item in $Folders)
-	{
-		$Foldercombobox.Items.Add($Item.name)
+	If ($DataStores){
+		Populate-ComboBox -Combobox $DataStoreClusterComboBox -Items $DataStores.name -Clear $False
 	}
 	
-	$Foldercombobox.enabled = $True
+	$DataStoreClusterComboBox.enabled = $True
+	
 }
 
 Function Control-VisibleExtraDrives{
@@ -1048,7 +964,8 @@ Function Determine-Portgroup{
 		Default
 		{
 			Write-RichText -LogType 'informational' -LogMSG "More than one possible portgroup was matched. Please choose one."
-			Populate-PortGroupCombobox -Portgroups $TrimmedMatches
+			Populate-ComboBox -Combobox $PortGroupcombobox -Items $TrimmedMatches.name
+			$PortGroupcombobox.enabled = $True
 		}
 	}
 }
@@ -1723,7 +1640,7 @@ Function Wait-ForReboot{
 		[String]$IP
 	)
 	
-	Write-Richtext -LogType 'Informational' -LogMsg "Waiting for reboot to complete. Sleeping for 30 seconds..."
+	Write-Richtext -LogType 'Informational' -LogMsg "Waiting for reboot to complete. Sleeping for 10 seconds..."
 	Start-sleep -Seconds 10
 	
 	for ($i = 1; $i -le 180; $i++)
