@@ -2211,9 +2211,21 @@ $DataStoreClusterComboBox_SelectedIndexChanged = {
 #Called when user selects a template.
 $TemplateSelectionComboBox_SelectedIndexChanged={
 	
-	$Global:Template = Get-Template -Server $Global:VCenterServer `
-									-Location $Global:Location `
-									-Name $TemplateSelectionComboBox.SelectedItem
+	Try
+	{
+		$Global:Template = Get-Template -Server $Global:VCenterServer `
+										-Location $Global:Location `
+										-Name $TemplateSelectionComboBox.SelectedItem `
+										-ErrorAction Stop `
+										-ErrorVariable $TemplateError
+	}
+	
+	Catch
+	{
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to retrieve template : $($Error[0])"
+		return;
+	}
+
 	
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Customizations please be patient."
 	Populate-CustomizationDropDown -Server $Global:VCenterServer
@@ -2223,8 +2235,19 @@ $TemplateSelectionComboBox_SelectedIndexChanged={
 #Called when user selects a customization.
 $CustomizationSelectioncomboBox_SelectedIndexChanged = {
 	
-	$Global:OSCustomizationSpec = Get-OSCustomizationSpec -Server $Global:VCenterServer `
-														  -Name $CustomizationSelectioncomboBox.SelectedItem
+	Try
+	{
+		$Global:OSCustomizationSpec = Get-OSCustomizationSpec -Server $Global:VCenterServer `
+															  -Name $CustomizationSelectioncomboBox.SelectedItem `
+															  -ErrorAction Stop `
+															  -ErrorVariable CustomizationErrors
+	}
+	
+	Catch
+	{
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to retrieve Customization : $($Error[0])"
+		return;
+	}
 	
 	$VMnameInputBox.Enabled = $true
 }
@@ -2380,7 +2403,7 @@ $RAMComboBox_SelectedIndexChanged={
 	Populate-ComboBox -Combobox $foldercombobox -Items $Folders.name
 }
 ]]></Code>
-  <Mode>0</Mode>
+  <Mode>1</Mode>
   <Assemblies>
     <Assembly>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
     <Assembly>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
