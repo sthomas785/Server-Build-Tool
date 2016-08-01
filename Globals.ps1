@@ -23,6 +23,29 @@ $LogFilePath = "c:\Temp\serverBuild-$(Get-date -Format "dd-MM-yyyy").txt"
 
 #endregion
 
+Function Populate-ComboBox{
+	Param
+	(
+		[System.Windows.Forms.ComboBox]$Combobox,
+		[Array]$Items,
+		[Bool]$Clear
+	)
+	
+	If ($Clear)
+	{
+		$Combobox.Items.clear()
+	}
+	
+	Foreach ($Item in $Items)
+	{
+		
+		$Combobox.Items.Add($item)
+	}
+	
+	$Combobox.enabled = $True
+	
+}
+
 Function ConnectTo-VCenter{
 <#
 	.SYNOPSIS
@@ -31,8 +54,14 @@ Function ConnectTo-VCenter{
 	.DESCRIPTION
 		Connects to the proper VCenter Server chosen by the user.
 	
+	.PARAM Server
+		The VCenter Server Selected by the user.
+	
+	.PARAM DomainCredential
+		The domain adm creds supplied by the user.
+	
 	.EXAMPLE
-		PS C:\> ConnectTo-VCenter
+		PS C:\> ConnectTo-VCenter -Server $Server -DomainCredential $Creds
 	
 	.NOTES
 		Calls Populate-LocalOfficeDropdown when complete.
@@ -60,29 +89,6 @@ Function ConnectTo-VCenter{
 	
 }
 
-Function Populate-ComboBox{
-	Param
-	(
-		[System.Windows.Forms.ComboBox]$Combobox,
-		[Array]$Items,
-		[Bool]$Clear
-	)
-	
-	If ($Clear)
-	{
-		$Combobox.Items.clear()
-	}
-	
-	Foreach ($Item in $Items)
-	{
-		
-		$Combobox.Items.Add($item)
-	}
-	
-	$Combobox.enabled = $True
-	
-}
-
 Function Populate-LocalOfficeDropDown{
 <#
 	.SYNOPSIS
@@ -92,8 +98,11 @@ Function Populate-LocalOfficeDropDown{
 		Function connects to VCenter and retrieves a list of local offices
 		and datacenters available for that region.
 	
+	.PARAM Server
+		The VCenter Server Selected by the user.
+	
 	.EXAMPLE
-		PS C:\> Populate-LocalOfficeDropDown
+		PS C:\> Populate-LocalOfficeDropDown -Server $Server
 	
 	.NOTES
 		N/A
@@ -109,12 +118,12 @@ Function Populate-LocalOfficeDropDown{
 	
 	Try
 	{
-		$LocalOffices = Get-Datacenter -Server $Server -ErrorAction Stop
+		$LocalOffices = Get-Datacenter -Server $Server -ErrorAction Stop -ErrorVariable datacentererror
 	}
 	
 	Catch
 	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather Local Offices : $($Error[0])"
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather Local Offices : $datacentererror"
 		Return;
 	}
 	
@@ -131,6 +140,74 @@ Function Populate-LocalOfficeDropDown{
 	#endregion
 	Populate-ComboBox -Combobox $LocalOfficeSelectioncomboBox -Items $LocalOffices -Clear $true
 	$LocalOfficeSelectioncomboBox.enabled = $True
+	
+}
+
+Function Populate-ESXClustersDropDown{
+<#
+	.SYNOPSIS
+		Function to populate the ESXClusters DropDown
+	
+	.DESCRIPTION
+		Function connects to vcenter and retrieves both a list of available clusters
+		and a list of single hosts. Populates the combobox with both, clusters first.
+	
+	.EXAMPLE
+		PS C:\> Populate-ESXClustersDropDown
+	
+	.NOTES
+		$Erroractionpreference is toggled because i couldn't find a better way to handle the
+		errors thrown when either clusters or hosts were not available. Try/Catch didn't work
+		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
+#>
+	
+	param (
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[String]$Server,
+		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[String]$Location
+		
+	)
+	
+	$Clusters = Get-Cluster -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable ClustersError
+	$VMHosts = Get-VMHost -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable HostsError
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of ESX Clusters:"
+		Foreach ($Cluster in $Clusters) { Write-Log -Message $Cluster.name }
+		Write-Log -Message "End List of ESX Clusters."
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of ESX Hosts:"
+		Foreach ($Item in $VMHosts) { Write-Log -Message $item.name }
+		Write-Log -Message "End List of ESX Hosts."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
+	If ($ClustersError -and $HostsError)
+	{
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather ESX Hosts and Clusters."
+		Write-Richtext -LogType 'Error' -LogMsg $ClustersError
+		Write-Richtext -LogType 'Error' -LogMsg $HostsError
+		Return;
+	}
+	
+	Write-Richtext -LogType 'Success' -LogMsg "Clusters retrieved successfully."
+	
+	$ESXClustersComboBox.Items.clear()
+	
+	If ($Clusters)
+	{
+		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $Clusters.name -Clear $False
+	}
+	
+	If ($VMHosts)
+	{
+		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $VMHosts.name -Clear $False
+	}
+	
+	$ESXClustersComboBox.enabled = $True
 	
 }
 
@@ -229,72 +306,6 @@ Function Populate-CustomizationDropDown{
 	Populate-ComboBox -Combobox $CustomizationSelectioncomboBox -Items $Customizations.name -Clear $true
 	$CustomizationSelectioncomboBox.enabled = $True
 
-}
-
-Function Populate-ESXClustersDropDown{
-<#
-	.SYNOPSIS
-		Function to populate the ESXClusters DropDown
-	
-	.DESCRIPTION
-		Function connects to vcenter and retrieves both a list of available clusters
-		and a list of single hosts. Populates the combobox with both, clusters first.
-	
-	.EXAMPLE
-		PS C:\> Populate-ESXClustersDropDown
-	
-	.NOTES
-		$Erroractionpreference is toggled because i couldn't find a better way to handle the
-		errors thrown when either clusters or hosts were not available. Try/Catch didn't work
-		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
-#>
-	
-	param (
-		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		[String]$Server,
-		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		[String]$Location
-		
-	)
-	
-	$Clusters = Get-Cluster -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable ClustersError
-	$VMHosts = Get-VMHost -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable HostsError
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of ESX Clusters:"
-		Foreach ($Cluster in $Clusters) { Write-Log -Message $Cluster.name }
-		Write-Log -Message "End List of ESX Clusters."
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of ESX Hosts:"
-		Foreach ($Item in $VMHosts) { Write-Log -Message $item.name }
-		Write-Log -Message "End List of ESX Hosts."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
-	If ($ClustersError -and $HostsError)
-	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather ESX Hosts and Clusters."
-		Write-Richtext -LogType 'Error' -LogMsg $ClustersError
-		Write-Richtext -LogType 'Error' -LogMsg $HostsError
-		Return;
-	}
-	
-	Write-Richtext -LogType 'Success' -LogMsg "Clusters retrieved successfully."
-
-	$ESXClustersComboBox.Items.clear()
-	
-	If ($Clusters){
-		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $Clusters.name -Clear $False
-	}
-	
-	If ($VMHosts){
-		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $VMHosts.name -Clear $False
-	}
-	
-	$ESXClustersComboBox.enabled = $True
-	
 }
 
 Function Populate-DatastoreClusterDropDown{
@@ -718,6 +729,7 @@ Function Create-VM{
 	New-VM -Server $Global:VCenterServer `
 		   -ResourcePool $Global:ResourcePool `
 		   -Name $Global:VMName `
+		   -Location $Global:FolderObject `
 		   -Datastore $Global:Datastore  `
 		   -Template $Global:Template `
 		   -OSCustomizationSpec $Global:OSCustomizationSpec
@@ -743,7 +755,10 @@ Function Create-VM{
 		
 		$Global:VM = $VM
 		
-		Change-VMFolder -VM $VM -Folder $Global:FolderObject
+		#Change-VMFolder -VM $VM -Folder $Global:FolderObject
+		
+		Set-VMCPUCount -VM $Global:VM `
+					   -NumCPU $VCPUsComboBox.SelectedItem
 		
 	}
 	
@@ -1015,7 +1030,7 @@ Function Determine-Portgroup{
 	
 	If ($Location -in ('AM1', 'AP1', 'EM1'))
 	{
-		$TrimmedMatches = $Portgroups | where-object { $_.name -like "*$PartialIP*" -and $_.name -like "*PROD*" }
+		$TrimmedMatches = $Portgroups | where-object { $_.name -like "*$PartialIP*" }
 	}
 	
 	Else

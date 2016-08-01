@@ -2262,6 +2262,7 @@ $CustomizationSelectioncomboBox_SelectedIndexChanged = {
 $VMnameInputBox_TextChanged={
 	
 	$Global:VMName = $VMnameInputBox.Text
+	Write-Log -Message "VMNAME = $Global:VMName"
 	Enable-HardwareGroupBox
 	Enable-NetworkingGroupBox
 	
@@ -2409,7 +2410,7 @@ $RAMComboBox_SelectedIndexChanged={
 	Populate-ComboBox -Combobox $foldercombobox -Items $Folders.name
 }
 ]]></Code>
-  <Mode>0</Mode>
+  <Mode>1</Mode>
   <Assemblies>
     <Assembly>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
     <Assembly>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
