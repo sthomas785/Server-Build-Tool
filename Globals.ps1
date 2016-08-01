@@ -16,6 +16,8 @@ $Global:FullIP = ""
 $Global:LocalAdminCreds = ""
 $Global:FolderObject = ""
 
+$Global:Testing = $true
+$LogFilePath = "c:\Temp\serverBuild-$(Get-date -Format "dd-MM-yyyy").txt"
 [Int]$Global:DriveCounter = 0
 [Array]$Global:DriveLetterarray = @('', 'a', 'b', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'q', 'r', 's', 't', 'u', 'v', 'x', 'y', 'z')
 
@@ -41,7 +43,6 @@ Function ConnectTo-VCenter{
 		[String]$Server,
 		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[System.Management.Automation.PSCredential]$DomainCredential
-	
 	)
 	
 	Write-RichText -LogType 'Informational' -LogMsg "Connecting to $Server please be patient."
@@ -54,10 +55,7 @@ Function ConnectTo-VCenter{
 		Write-Richtext -LogType 'Error' -LogMsg "Unable to connect to $Server : $($Error[0])"
 		return;
 	}
-
-		
 	Write-Richtext -LogType 'Success' -LogMsg "Connected to $Server."
-	
 	Populate-LocalOfficeDropDown -Server $Server
 	
 }
@@ -121,6 +119,16 @@ Function Populate-LocalOfficeDropDown{
 	}
 	
 	Write-Richtext -LogType 'Success' -LogMsg "Local Offices retrieved successfully."
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of Local Offices:"
+		Foreach ($Office in $LocalOffices){ Write-Log -Message $Office }
+		Write-Log -Message "End List of Local Offices."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
 	Populate-ComboBox -Combobox $LocalOfficeSelectioncomboBox -Items $LocalOffices -Clear $true
 	$LocalOfficeSelectioncomboBox.enabled = $True
 	
@@ -161,6 +169,16 @@ Function Populate-TemplateDropDown{
 	}
 	
 	Write-Richtext -LogType 'Success' -LogMsg "Templates retrieved from $Server."
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of Templates:"
+		Foreach ($Template in $Templates) { Write-Log -Message $Template }
+		Write-Log -Message "End List of Templates."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
 	Populate-ComboBox -Combobox $TemplateSelectionComboBox -Items $Templates -Clear $true
 	$TemplateSelectionComboBox.enabled = $True
 	
@@ -198,6 +216,16 @@ Function Populate-CustomizationDropDown{
 	}
 	
 	Write-Richtext -LogType 'Success' -LogMsg "Customizations retrieved successfully."
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of Customizations:"
+		Foreach ($Customization in $Customizations) { Write-Log -Message $Customization.name }
+		Write-Log -Message "End List of Customizations."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
 	Populate-ComboBox -Combobox $CustomizationSelectioncomboBox -Items $Customizations.name -Clear $true
 	$CustomizationSelectioncomboBox.enabled = $True
 
@@ -231,7 +259,20 @@ Function Populate-ESXClustersDropDown{
 	
 	$Clusters = Get-Cluster -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable ClustersError
 	$VMHosts = Get-VMHost -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable HostsError
-
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of ESX Clusters:"
+		Foreach ($Cluster in $Clusters) { Write-Log -Message $Cluster.name }
+		Write-Log -Message "End List of ESX Clusters."
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of ESX Hosts:"
+		Foreach ($Item in $VMHosts) { Write-Log -Message $item.name }
+		Write-Log -Message "End List of ESX Hosts."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
 	If ($ClustersError -and $HostsError)
 	{
 		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather ESX Hosts and Clusters."
@@ -288,6 +329,21 @@ Function Populate-DatastoreClusterDropDown{
 	
 	$DataStores = $ResourcePool | Get-Datastore -ErrorAction SilentlyContinue -ErrorVariable DataStoreErrors
 	$DataStoreClusters = $DataStores | Get-DatastoreCluster -ErrorAction SilentlyContinue -ErrorVariable DataStoreClustersErrors
+	
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of DataStore Clusters:"
+		Foreach ($Cluster in $DataStoreClusters) { Write-Log -Message $Cluster.name }
+		Write-Log -Message "End List of DataStore Clusters."
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of Datastores:"
+		Foreach ($DataStore in $DataStores) { Write-Log -Message $DataStore.name }
+		Write-Log -Message "End List of Datastores."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
 	
 	If ($DataStoreClustersErrors -and $DataStoresErrors){
 		Write-Richtext -LogType 'Error' -LogMsg "Unable to pull and DataStore Clusters and Datastores."
@@ -680,6 +736,11 @@ Function Create-VM{
 	{
 		Write-RichText -LogType 'Success' -LogMsg "VM Creation Completed!"
 		
+		If ($VM -isnot [VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine])
+		{
+			Write-RichText -LogType 'error' -LogMsg "Another VM of the same name already exists. This breaks everything."
+		}
+		
 		$Global:VM = $VM
 		
 		Change-VMFolder -VM $VM -Folder $Global:FolderObject
@@ -698,7 +759,7 @@ Function Change-VMFolder{
 	
 	Write-RichText -LogType 'informational' -LogMsg "Moving the VM from the Root Folder to $($Folder.name)"
 	
-	Move-VM -VM $VM -Destination $Folder
+	Move-VM -VM $VM -Destination $Folder -ErrorAction SilentlyContinue -ErrorVariable MoveError
 	
 	$NewVM = Get-VM -Name $VM.name
 	
@@ -713,7 +774,8 @@ Function Change-VMFolder{
 	
 	Else
 	{
-		Write-RichText -LogType 'Error' -LogMsg "Failed to Move VM."	
+		Write-RichText -LogType 'Error' -LogMsg "Failed to Move VM."
+		Write-Log -Message $MoveError
 	}
 }
 
@@ -748,7 +810,7 @@ Function Set-VMCPUCount{
 		[Int]$NumCPU
 	)
 	
-	$Set = $VM | Set-VM -NumCpu $NumCPU -Confirm:$false
+	$Set = $VM | Set-VM -NumCpu $NumCPU -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable CPUError
 	
 	If ($Set.numcpu -eq $NumCPU)
 	{
@@ -759,6 +821,7 @@ Function Set-VMCPUCount{
 	Else
 	{
 		Write-RichText -LogType Error -LogMsg "Unable to Set VCPU Count!!"
+		Write-Log -Message $CPUerror
 		Return
 	}
 }
@@ -794,7 +857,7 @@ Function Set-VMRamAmount{
 		[Int]$MemoryGB
 	)
 	
-	$Set = $VM | Set-VM -MemoryGB $MemoryGB -Confirm:$false
+	$Set = $VM | Set-VM -MemoryGB $MemoryGB -Confirm:$false -ErrorAction SilentlyContinue -ErrorVariable RAMError
 	
 	If ($Set.MemoryGB -eq $MemoryGB)
 	{
@@ -806,6 +869,7 @@ Function Set-VMRamAmount{
 	Else
 	{
 		Write-RichText -LogType Error -LogMsg "Unable to Set RAM Value!!"
+		Write-Log -Message $RamError
 		Return $false
 	}
 }
@@ -928,13 +992,25 @@ Function Determine-Portgroup{
 	)
 	
 	[String]$PartialIp = $Octet1Textbox.text + "." + $Octet2Textbox.text + "." + $Octet3Textbox.text
+	Write-Log -Message "PARTIAL IP : $PartialIp"
 	[String]$Location = $Global:Location
 	[Array]$VirtualSwitches = $vm.VMHost | get-virtualswitch
+	Write-Log -Message "VIRTUALSwitches : $($VirtualSwitches.name)"
 	[Array]$Portgroups = @()
 	
 	Foreach ($VSwitch in $VirtualSwitches)
 	{
 		$Portgroups += ($Vswitch | Get-VirtualPortGroup)
+		#region Logging
+		If ($Global:Testing)
+		{
+			Write-Log -Message "------------------------------"
+			Write-Log -Message "Begin List of Portgroups:"
+			Foreach ($portgroup in $Portgroups) { Write-Log -Message $portgroup.name }
+			Write-Log -Message "End List of Portgroups."
+			Write-Log -Message "------------------------------"
+		}
+		#endregion
 	}
 	
 	If ($Location -in ('AM1', 'AP1', 'EM1'))
@@ -948,6 +1024,17 @@ Function Determine-Portgroup{
 	}
 	
 	$PortgroupCount = ($TrimmedMatches | measure-object).count
+	
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of Trimmed matches:"
+		Foreach ($item in $TrimmedMatches) { Write-Log -Message $Item.name }
+		Write-Log -Message "End List of Trimmed Matches."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
 	
 	switch ($PortgroupCount)
 	{
@@ -2445,16 +2532,19 @@ Function Write-RichText{
 		Error {
 			$richtextbox1.SelectionColor = 'Red'
 			$richtextbox1.AppendText("`n $(Get-date -Format "hh:mm:ss") - $logmsg")
+			Write-Log -Message $logmsg
 			
 		}
 		Success {
 			$richtextbox1.SelectionColor = 'Green'
 			$richtextbox1.AppendText("`n $(Get-date -Format "hh:mm:ss") - $logmsg")
+			Write-Log -Message $logmsg
 			
 		}
 		Informational {
 			$richtextbox1.SelectionColor = 'Blue'
 			$richtextbox1.AppendText("`n $(Get-date -Format "hh:mm:ss") - $logmsg")
+			Write-Log -Message $logmsg
 			
 		}
 		

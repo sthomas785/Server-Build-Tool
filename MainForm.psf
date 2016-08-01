@@ -1460,8 +1460,11 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Enabled">False</Property>
         <Property name="FormattingEnabled">True</Property>
         <Property name="Items">
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">1</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">3</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
+          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">5</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">6</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
           <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">10</Item>
@@ -2119,21 +2122,24 @@ $Form_Load = {
 
 #Called when user selects a VCenter Server.
 $VCenterComboBox_SelectedIndexChanged = {
+	Write-Log -Message "******************************"
+	Write-Log -Message "USER : $Env:USERNAME"
+	Write-Log -Message "DateTime : $(Get-Date)"
 	
 	$Global:VCenterServer = $($VCenterComboBox.SelectedItem)
+	Write-Log -Message "VCENTER : $($VCenterComboBox.SelectedItem)"
 	Write-RichText -LogType 'Informational' -LogMsg "Please Provide domain admin credentials in the form of WCNET\XXXX-ADM"
 	$Global:DomainCredentials = Get-Credential
 	ConnectTo-VCenter -Server $Global:VCenterServer -DomainCredential $Global:DomainCredentials
-	
 }
 
 #Called when user selects a local office / datacenter.
 $LocalOfficeSelectionComboBox_SelectedIndexChanged = {
 	
 	$Global:Location = $($LocalOfficeSelectionComboBox.SelectedItem)
+	Write-Log -Message "LOCATION : $Global:Location"
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving ESX Clusters please be patient."
 	Populate-ESXClustersDropDown -Server $Global:VCenterServer -Location $Global:Location
-	
 }
 
 #Called when user selects a ESX CLuster or host.
@@ -2403,7 +2409,7 @@ $RAMComboBox_SelectedIndexChanged={
 	Populate-ComboBox -Combobox $foldercombobox -Items $Folders.name
 }
 ]]></Code>
-  <Mode>1</Mode>
+  <Mode>0</Mode>
   <Assemblies>
     <Assembly>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
     <Assembly>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
