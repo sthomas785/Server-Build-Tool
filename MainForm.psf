@@ -1314,16 +1314,6 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="DropDownStyle">DropDownList</Property>
         <Property name="Enabled">False</Property>
         <Property name="FormattingEnabled">True</Property>
-        <Property name="Items">
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">2</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">4</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">8</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">16</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">32</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">64</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">128</Item>
-          <Item type="System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">256</Item>
-        </Property>
         <Property name="Location">5, 104</Property>
         <Property name="Name">PortGroupComboBox</Property>
         <Property name="Size">315, 25</Property>
@@ -2410,7 +2400,7 @@ $RAMComboBox_SelectedIndexChanged={
 	Populate-ComboBox -Combobox $foldercombobox -Items $Folders.name
 }
 ]]></Code>
-  <Mode>1</Mode>
+  <Mode>0</Mode>
   <Assemblies>
     <Assembly>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
     <Assembly>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>

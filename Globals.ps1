@@ -1767,11 +1767,31 @@ Function Set-DNSInfo{
 					-GuestCredential $LocalCredential `
 					-ScriptType Powershell
 	
-	Write-RichText -LogType 'Success' -LogMsg "Guest DNS information successfully set."
+	$Scripttext = '(Get-DnsClientServerAddress).serveraddresses'
 	
-	Enable-Remoting -VM $VM `
-					-LocalCredential $LocalCredential `
-					-IP $Global:fullip
+	$Response = Invoke-VMScript -VM $VM `
+								-ScriptText $ScriptText `
+								-GuestCredential $LocalCredential `
+								-ScriptType Powershell
+		
+	$DNSarray = $DNSString -split ','
+	$Results = $DNSarray | % { $Response -like "*$_*" }
+	
+	If ($Results -contains $false)
+	{
+		Write-RichText -LogType 'error' -LogMsg "Guest DNS information NOT SET."
+		Write-RichText -LogType 'Success' -LogMsg "Guest DNS information : $Response"
+		Return;
+	}
+	
+	Else
+	{
+		Write-RichText -LogType 'Success' -LogMsg "Guest DNS information successfully set."
+		
+		Enable-Remoting -VM $VM `
+						-LocalCredential $LocalCredential `
+						-IP $Global:fullip
+	}
 	
 }
 
@@ -1807,49 +1827,104 @@ Function Enable-Remoting{
 		[String]$IP
 	)
 	
+	#region Disable Windows Firewall
+	
 	Write-RichText -LogType 'informational' -LogMsg 'Disabling all Windows FireWall properties.'
 	
 	$ScriptText = 'netsh advfirewall set allprofiles state off'
+	
+	Invoke-VMScript -VM $VM `
+					-ScriptText $ScriptText `
+					-GuestCredential $LocalCredential `
+					-ScriptType Powershell
+	
+	
+	$Scripttext = 'netsh advfirewall show allprofiles'
 	
 	$Response = Invoke-VMScript -VM $VM `
 								-ScriptText $ScriptText `
 								-GuestCredential $LocalCredential `
 								-ScriptType Powershell
 	
-	Write-RichText -LogType 'Success' -LogMsg 'Windows Firewall disabled.'
+	$States = ([regex]::matches($Response, "(?:State[\s]+)(OFF)(?:[\s])"))
+	
+	If ($States.captures.count -eq 3)
+	{
+		Write-RichText -LogType 'Success' -LogMsg 'Windows Firewall disabled.'
+	}
+	
+	Else
+	{
+		Write-RichText -LogType 'error' -LogMsg 'Windows Firewall is not disabled.'
+		Write-RichText -LogType 'error' -LogMsg $Response
+		Return;
+	}
+	
+	#endregion
+	
+	#region Set Trusted Hosts
 	
 	Write-RichText -LogType 'informational' -LogMsg 'Setting trusted hosts.'
 	
 	$ScriptText = 'Set-Item WSMan:\localhost\Client\TrustedHosts * -Force'
 	
+	Invoke-VMScript -VM $VM `
+					-ScriptText $ScriptText `
+					-GuestCredential $LocalCredential `
+					-ScriptType Powershell
+	
+	$Scripttext = 'Get-Item WSMan:\localhost\Client\TrustedHosts'
+	
 	$Response = Invoke-VMScript -VM $VM `
 								-ScriptText $ScriptText `
 								-GuestCredential $LocalCredential `
 								-ScriptType Powershell
 	
-	Write-RichText -LogType 'Success' -LogMsg 'Trusted Hosts Set.'
+	If ($Response -like '***')
+	{
+		Write-RichText -LogType 'Success' -LogMsg 'Trusted Hosts set..'
+	}
+	
+	Else
+	{
+		Write-RichText -LogType 'error' -LogMsg 'Trusted Hosts Not Set!'
+		Write-RichText -LogType 'error' -LogMsg $Response
+		Return;
+	}
+	
+	#endregion
+	
+	#region Enable PS Remoting
 	
 	Write-RichText -LogType 'informational' -LogMsg 'Enabling PS Remoting.'
 	
 	$ScriptText = 'Enable-PSRemoting -Force'
 	
-	$Response = Invoke-VMScript -VM $VM `
-								-ScriptText $ScriptText `
-								-GuestCredential $LocalCredential `
-								-ScriptType Powershell
+	Invoke-VMScript -VM $VM `
+					-ScriptText $ScriptText `
+					-GuestCredential $LocalCredential `
+					-ScriptType Powershell
+		
+	Write-RichText -LogType 'informational' -LogMsg 'Attempted to enable PS Remoting.'
 	
-	Write-RichText -LogType 'success' -LogMsg 'PS Remoting Enabled'
+	#endregion
+	
+	#region Set WSMAN
 	
 	Write-RichText -LogType 'informational' -LogMsg 'Setting WSMAN QuickConfig.'
 	
 	$Scripttext = 'Set-WSManQuickConfig -Force'
 	
-	$Response = Invoke-VMScript -VM $VM `
-								-ScriptText $ScriptText `
-								-GuestCredential $LocalCredential `
-								-ScriptType Powershell
+	Invoke-VMScript -VM $VM `
+					-ScriptText $ScriptText `
+					-GuestCredential $LocalCredential `
+					-ScriptType Powershell
+		
+	Write-RichText -LogType 'informational' -LogMsg 'WSMAN Configuration Attempted.'
 	
-	Write-RichText -LogType 'Success' -LogMsg 'WSMAN Configured.'
+	#endregion
+	
+	#region Test Remoting
 	
 	$Remoting = Invoke-Command -Computername $IP `
 							   -Credential $LocalCredential `
@@ -1870,6 +1945,8 @@ Function Enable-Remoting{
 		Write-RichText -LogType 'Error' -LogMsg "PS remoting is NOT enabled! Exiting Process!"
 		Return
 	}
+	
+	#endregion
 	
 }
 
@@ -2425,9 +2502,7 @@ Function Invoke-Changes{
 		Write-Log -Message "Step 23 - Create Dummy Admin = SUCCESS"
 		
 		#endregion
-		
-		NET LOCALGROUP "Remote Desktop Users" /ADD "John Doe"
-		
+	
 		$Data = Get-Content -Path 'c:\automationlog.txt'
 		Return $Data
 		
