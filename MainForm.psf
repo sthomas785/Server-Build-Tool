@@ -1236,7 +1236,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">foldercombobox</Property>
         <Property name="Size">315, 25</Property>
         <Property name="TabIndex">78</Property>
-        <Event name="SelectedIndexChanged">foldercombobox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">foldercombobox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="folderlabel" children="Controls">
         <Property name="Location">11, 22</Property>
@@ -1513,7 +1513,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">CustomizationSelectioncomboBox</Property>
         <Property name="Size">293, 25</Property>
         <Property name="TabIndex">6</Property>
-        <Event name="SelectedIndexChanged">CustomizationSelectioncomboBox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">CustomizationSelectioncomboBox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="CustomizationSelectionLabel" children="Controls">
         <Property name="Location">5, 22</Property>
@@ -1538,7 +1538,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">TemplateSelectionComboBox</Property>
         <Property name="Size">293, 25</Property>
         <Property name="TabIndex">5</Property>
-        <Event name="SelectedIndexChanged">TemplateSelectionComboBox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">TemplateSelectionComboBox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="TemplateSelectionLabel" children="Controls">
         <Property name="Location">5, 22</Property>
@@ -1563,7 +1563,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">DataStoreClusterComboBox</Property>
         <Property name="Size">293, 25</Property>
         <Property name="TabIndex">4</Property>
-        <Event name="SelectedIndexChanged">DataStoreClusterComboBox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">DataStoreClusterComboBox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="DataStoreClusterSelectionLabel" children="Controls">
         <Property name="Location">5, 22</Property>
@@ -1588,7 +1588,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">ESXClustersComboBox</Property>
         <Property name="Size">295, 25</Property>
         <Property name="TabIndex">3</Property>
-        <Event name="SelectedIndexChanged">ESXClustersComboBox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">ESXClustersComboBox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="ESXHostsSelectionLabel" children="Controls">
         <Property name="Location">5, 22</Property>
@@ -1613,7 +1613,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">LocalOfficeSelectionComboBox</Property>
         <Property name="Size">295, 25</Property>
         <Property name="TabIndex">2</Property>
-        <Event name="SelectedIndexChanged">LocalOfficeSelectionComboBox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">LocalOfficeSelectionComboBox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="LocalOfficeSelectionLabel" children="Controls">
         <Property name="Location">5, 22</Property>
@@ -1642,7 +1642,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">VCenterComboBox</Property>
         <Property name="Size">295, 25</Property>
         <Property name="TabIndex">1</Property>
-        <Event name="SelectedIndexChanged">VCenterComboBox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">VCenterComboBox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="VCenterSelection" children="Controls">
         <Property name="Location">5, 22</Property>
@@ -2111,7 +2111,7 @@ $Form_Load = {
 }
 
 #Called when user selects a VCenter Server.
-$VCenterComboBox_SelectedIndexChanged = {
+$VCenterComboBox_SelectionChangeCommitted = {
 	Write-Log -Message "******************************"
 	Write-Log -Message "USER : $Env:USERNAME"
 	Write-Log -Message "DateTime : $(Get-Date)"
@@ -2121,130 +2121,43 @@ $VCenterComboBox_SelectedIndexChanged = {
 	Write-RichText -LogType 'Informational' -LogMsg "Please Provide domain admin credentials in the form of WCNET\XXXX-ADM"
 	$Global:DomainCredentials = Get-Credential
 	ConnectTo-VCenter -Server $Global:VCenterServer -DomainCredential $Global:DomainCredentials
+	
 }
 
 #Called when user selects a local office / datacenter.
-$LocalOfficeSelectionComboBox_SelectedIndexChanged = {
-	
+$LocalOfficeSelectionComboBox_SelectionChangeCommitted = {
 	$Global:Location = $($LocalOfficeSelectionComboBox.SelectedItem)
 	Write-Log -Message "LOCATION : $Global:Location"
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving ESX Clusters please be patient."
 	Populate-ESXClustersDropDown -Server $Global:VCenterServer -Location $Global:Location
+	
 }
 
 #Called when user selects a ESX CLuster or host.
-$ESXClustersComboBox_SelectedIndexChanged={
-
-	$Clusters = Get-Cluster -Server $Global:VCenterServer `
-							-location $Global:Location `
-							-Name $ESXClustersComboBox.SelectedItem `
-							-ErrorAction SilentlyContinue `
-							-ErrorVariable ESXClustersErrors
-	
-	$VMHosts = Get-VMHost -Server $Global:VCenterServer `
-						  -location $Global:Location `
-						  -Name $ESXClustersComboBox.SelectedItem `
-						  -ErrorAction SilentlyContinue `
-						  -ErrorVariable ESXHostsErrors
-	
-	If ($Clusters){
-		$Global:ResourcePool = $Clusters
-	}
-	
-	ElseIf($VMHosts){
-		$Global:ResourcePool = $VMHosts
-	}
-	
-	Else{
-		Write-RichText -LogType 'error' -LogMsg "Unable to find the selected ESXhost or cluster."
-		Write-RichText -LogType 'error' -LogMsg $ESXClustersErrors
-		Write-RichText -LogType 'error' -LogMsg $ESXHostsErrors
-	}
-	
+$ESXClustersComboBox_SelectionChangeCommitted = {
+	$Global:ResourcePool = $ESXClustersComboBox.SelectedItem
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Datastores please be patient."
-	
 	Populate-DatastoreClusterDropDown -ResourcePool $Global:ResourcePool
-	
 }
 
 #Called when user selects a DataStore Cluster or single datastore.
-$DataStoreClusterComboBox_SelectedIndexChanged = {
-	
-	$ErrorActionPreference = 'SilentlyContinue'
-	
-	$DataStoreClusters = Get-DataStoreCluster -Server $Global:VCenterServer `
-											  -Location $Global:Location `
-											  -Name $DataStoreClusterComboBox.SelectedItem `
-											  -ErrorAction SilentlyContinue `
-											  -ErrorVariable DataStoreClustersErrors
-	
-	$DataStores = Get-DataStore -Server $Global:VCenterServer `
-								-Location $Global:Location `
-								-name $DataStoreClusterComboBox.SelectedItem `
-								-ErrorAction SilentlyContinue `
-								-ErrorVariable DataStoresErrors
-		
-	If ($DataStoreClusters){
-		$Global:Datastore = $DataStoreClusters
-	}
-	
-	elseif($DataStores){
-		$Global:Datastore = $DataStores
-	}
-	
-	Else{
-		Write-RichText -LogType 'error' -LogMsg "Unable to find the selected Datastore or Datastore Cluster."
-		Write-RichText -LogType 'error' -LogMsg $DataStoreClustersErrors
-		Write-RichText -LogType 'error' -LogMsg $DataStoresErrors
-	}
-	
+$DataStoreClusterComboBox_SelectionChangeCommitted = {
+	$Global:Datastore = $DataStoreClusterComboBox.SelectedItem
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Templates please be patient."
-	
 	Populate-TemplateDropDown -Server $Global:VCenterServer -Location $Global:Location
 	
 }
 
 #Called when user selects a template.
-$TemplateSelectionComboBox_SelectedIndexChanged={
-	
-	Try
-	{
-		$Global:Template = Get-Template -Server $Global:VCenterServer `
-										-Location $Global:Location `
-										-Name $TemplateSelectionComboBox.SelectedItem `
-										-ErrorAction Stop `
-										-ErrorVariable $TemplateError
-	}
-	
-	Catch
-	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to retrieve template : $($Error[0])"
-		return;
-	}
-
-	
+$TemplateSelectionComboBox_SelectionChangeCommitted = {
+	$Global:Template = $TemplateSelectionComboBox.SelectedItem
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving Customizations please be patient."
 	Populate-CustomizationDropDown -Server $Global:VCenterServer
-	
 }
 
 #Called when user selects a customization.
-$CustomizationSelectioncomboBox_SelectedIndexChanged = {
-	
-	Try
-	{
-		$Global:OSCustomizationSpec = Get-OSCustomizationSpec -Server $Global:VCenterServer `
-															  -Name $CustomizationSelectioncomboBox.SelectedItem `
-															  -ErrorAction Stop `
-															  -ErrorVariable CustomizationErrors
-	}
-	
-	Catch
-	{
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to retrieve Customization : $($Error[0])"
-		return;
-	}
-	
+$CustomizationSelectioncomboBox_SelectionChangeCommitted = {
+	$Global:OSCustomizationSpec = $CustomizationSelectioncomboBox.SelectedItem
 	$VMnameInputBox.Enabled = $true
 }
 
@@ -2386,21 +2299,21 @@ $CompleteProcessButton_Click = {
 }
 
 #Called when user selects a folder.
-$foldercombobox_SelectedIndexChanged={
-	
-	$Global:FolderObject = Get-Folder -Location $Global:Location -Name $foldercombobox.SelectedItem
+$foldercombobox_SelectionChangeCommitted = {
+	$Global:FolderObject = $foldercombobox.SelectedItem
 	$CompleteProcessButton.Enabled = $true
-	
 }
 
 #Called when user selects a the amount of RAM.
 $RAMComboBox_SelectedIndexChanged={
 	
 	$Folders = Get-Folder -Location $Global:Location | Where-Object { $_.Type -eq 'VM' } | Sort-Object
-	Populate-ComboBox -Combobox $foldercombobox -Items $Folders.name
+	$foldercombobox.DataSource = $Folders
+	$foldercombobox.DisplayMember = "Name"
+	$foldercombobox.Enabled = $true
 }
 ]]></Code>
-  <Mode>0</Mode>
+  <Mode>1</Mode>
   <Assemblies>
     <Assembly>mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>
     <Assembly>System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</Assembly>

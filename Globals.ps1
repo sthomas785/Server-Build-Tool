@@ -380,7 +380,7 @@ Function Populate-ESXClustersDropDown{
 		[String]$Location
 		
 	)
-	
+	$ESXItems = @()
 	$Clusters = Get-Cluster -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable ClustersError
 	$VMHosts = Get-VMHost -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable HostsError
 	#region Logging
@@ -405,21 +405,96 @@ Function Populate-ESXClustersDropDown{
 		Return;
 	}
 	
-	Write-Richtext -LogType 'Success' -LogMsg "Clusters retrieved successfully."
+	Write-Richtext -LogType 'Success' -LogMsg "ESX Objects retrieved successfully."
 	
-	$ESXClustersComboBox.Items.clear()
-	
-	If ($Clusters)
-	{
-		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $Clusters.name -Clear $False
+	If ($Clusters){
+		$ESXItems += $Clusters
 	}
 	
-	If ($VMHosts)
-	{
-		Populate-ComboBox -Combobox $ESXClustersComboBox -Items $VMHosts.name -Clear $False
+	If ($VMHosts){
+		$ESXItems += $VMHosts
 	}
 	
+	$ESXClustersComboBox.DataSource = $ESXItems
+	$ESXClustersComboBox.selectedindex = -1
+	$ESXClustersComboBox.selectedindex = -1
+	$ESXClustersComboBox.DisplayMember = "Name"
 	$ESXClustersComboBox.enabled = $True
+	
+}
+
+Function Populate-DatastoreClusterDropDown{
+<#
+	.SYNOPSIS
+		Function to Populate the DatastoreCluster DropDown.
+	
+	.DESCRIPTION
+		Function connects to VCenter and retrieves a list of datastore clusters
+		and single datastores. Populates the combobox with both, clusters first.
+	
+	.EXAMPLE
+		PS C:\> Populate-DatastoreClusterDropDown
+	
+	.NOTES
+		This was a decent amount of work to get right. Have to first get the ESX Clusters then 
+		get the datastores that belong to those. Then get the datastore clusters that belong to them.
+	
+		There is about a 90% chance i could do this in a more efficient way. Will check on this later.
+		[#TODO]
+	
+		$Erroractionpreference is toggled because i couldn't find a better way to handle the
+		errors thrown when either clusters or hosts were not available. Try/Catch didn't work
+		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
+#>
+	
+	param
+	(
+		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		$ResourcePool
+	)
+	$Datastoreitems = @()
+	$DataStores = $ResourcePool | Get-Datastore -ErrorAction SilentlyContinue -ErrorVariable DataStoreErrors
+	$DataStoreClusters = $DataStores | Get-DatastoreCluster -ErrorAction SilentlyContinue -ErrorVariable DataStoreClustersErrors
+	
+	#region Logging
+	If ($Global:Testing)
+	{
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of DataStore Clusters:"
+		Foreach ($Cluster in $DataStoreClusters) { Write-Log -Message $Cluster.name }
+		Write-Log -Message "End List of DataStore Clusters."
+		Write-Log -Message "------------------------------"
+		Write-Log -Message "Begin List of Datastores:"
+		Foreach ($DataStore in $DataStores) { Write-Log -Message $DataStore.name }
+		Write-Log -Message "End List of Datastores."
+		Write-Log -Message "------------------------------"
+	}
+	#endregion
+	
+	If ($DataStoreClustersErrors -and $DataStoresErrors)
+	{
+		Write-Richtext -LogType 'Error' -LogMsg "Unable to pull and DataStore Clusters and Datastores."
+		Write-Richtext -LogType 'Error' -LogMsg $DataStoreClustersErrors
+		Write-Richtext -LogType 'Error' -LogMsg $DataStoreErrors
+		Return;
+	}
+	
+	Write-Richtext -LogType 'Success' -LogMsg "DataStore Objects retrieved successfully."
+	
+	
+	If ($DataStoreClusters){
+		$Datastoreitems += $DataStoreClusters
+	}
+	
+	If ($DataStores){
+		$Datastoreitems += $DataStores
+	}
+	
+	$DataStoreClusterComboBox.DataSource = $Datastoreitems
+	$DataStoreClusterComboBox.selectedindex = -1
+	$DataStoreClusterComboBox.selectedindex = -1
+	$DataStoreClusterComboBox.DisplayMember = "Name"
+	$DataStoreClusterComboBox.enabled = $True
 	
 }
 
@@ -468,7 +543,11 @@ Function Populate-TemplateDropDown{
 		Write-Log -Message "------------------------------"
 	}
 	#endregion
-	Populate-ComboBox -Combobox $TemplateSelectionComboBox -Items $Templates -Clear $true
+	
+	$TemplateSelectionComboBox.DataSource = $Templates
+	$TemplateSelectionComboBox.selectedindex = -1
+	$TemplateSelectionComboBox.selectedindex = -1
+	$TemplateSelectionComboBox.DisplayMember = "Name"
 	$TemplateSelectionComboBox.enabled = $True
 	
 }
@@ -515,80 +594,12 @@ Function Populate-CustomizationDropDown{
 		Write-Log -Message "------------------------------"
 	}
 	#endregion
-	Populate-ComboBox -Combobox $CustomizationSelectioncomboBox -Items $Customizations.name -Clear $true
+	
+	$CustomizationSelectioncomboBox.DataSource = $Customizations
+	$CustomizationSelectioncomboBox.selectedindex = -1
+	$CustomizationSelectioncomboBox.selectedindex = -1
+	$CustomizationSelectioncomboBox.DisplayMember = "Name"
 	$CustomizationSelectioncomboBox.enabled = $True
-
-}
-
-Function Populate-DatastoreClusterDropDown{
-<#
-	.SYNOPSIS
-		Function to Populate the DatastoreCluster DropDown.
-	
-	.DESCRIPTION
-		Function connects to VCenter and retrieves a list of datastore clusters
-		and single datastores. Populates the combobox with both, clusters first.
-	
-	.EXAMPLE
-		PS C:\> Populate-DatastoreClusterDropDown
-	
-	.NOTES
-		This was a decent amount of work to get right. Have to first get the ESX Clusters then 
-		get the datastores that belong to those. Then get the datastore clusters that belong to them.
-	
-		There is about a 90% chance i could do this in a more efficient way. Will check on this later.
-		[#TODO]
-	
-		$Erroractionpreference is toggled because i couldn't find a better way to handle the
-		errors thrown when either clusters or hosts were not available. Try/Catch didn't work
-		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
-#>
-	
-	param
-	(
-		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		$ResourcePool
-	)
-	
-	$DataStores = $ResourcePool | Get-Datastore -ErrorAction SilentlyContinue -ErrorVariable DataStoreErrors
-	$DataStoreClusters = $DataStores | Get-DatastoreCluster -ErrorAction SilentlyContinue -ErrorVariable DataStoreClustersErrors
-	
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of DataStore Clusters:"
-		Foreach ($Cluster in $DataStoreClusters) { Write-Log -Message $Cluster.name }
-		Write-Log -Message "End List of DataStore Clusters."
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of Datastores:"
-		Foreach ($DataStore in $DataStores) { Write-Log -Message $DataStore.name }
-		Write-Log -Message "End List of Datastores."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
-	
-	If ($DataStoreClustersErrors -and $DataStoresErrors){
-		Write-Richtext -LogType 'Error' -LogMsg "Unable to pull and DataStore Clusters and Datastores."
-		Write-Richtext -LogType 'Error' -LogMsg $DataStoreClustersErrors
-		Write-Richtext -LogType 'Error' -LogMsg $DataStoreErrors
-		Return;
-	}
-
-	Write-Richtext -LogType 'Success' -LogMsg "DataStores or Clusters retrieved successfully."
-		
-	$DataStoreClusterComboBox.Items.clear()
-		
-	If ($DataStoreClusters){
-		Populate-ComboBox -Combobox $DataStoreClusterComboBox -Items $DataStoreClusters.name -Clear $False
-	}
-	
-	If ($DataStores){
-		Populate-ComboBox -Combobox $DataStoreClusterComboBox -Items $DataStores.name -Clear $False
-	}
-	
-	$DataStoreClusterComboBox.enabled = $True
-	
 }
 
 Function Control-VisibleExtraDrives{
@@ -967,43 +978,11 @@ Function Create-VM{
 		
 		$Global:VM = $VM
 		
-		#Change-VMFolder -VM $VM -Folder $Global:FolderObject
-		
 		Set-VMCPUCount -VM $Global:VM `
 					   -NumCPU $VCPUsComboBox.SelectedItem
 		
 	}
 	
-}
-
-Function Change-VMFolder{
-	param (
-		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
-		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		$Folder
-	)
-	
-	Write-RichText -LogType 'informational' -LogMsg "Moving the VM from the Root Folder to $($Folder.name)"
-	
-	Move-VM -VM $VM -Destination $Folder -ErrorAction SilentlyContinue -ErrorVariable MoveError
-	
-	$NewVM = Get-VM -Name $VM.name
-	
-	If ($NewVM.folder.name -eq $Folder.name)
-	{
-		Write-RichText -LogType 'Success' -LogMsg "VM Successfully Moved."
-		$Global:VM = $NewVM
-		
-		Set-VMCPUCount -VM $Global:VM `
-					   -NumCPU $VCPUsComboBox.SelectedItem
-	}
-	
-	Else
-	{
-		Write-RichText -LogType 'Error' -LogMsg "Failed to Move VM."
-		Write-Log -Message $MoveError
-	}
 }
 
 Function Set-VMCPUCount{
@@ -1703,7 +1682,7 @@ Function Set-IPInfo{
 								-GuestCredential $LocalCredential `
 								-ScriptType Powershell
 	
-	if ($Response -like "*$IP*")
+	if ($Response.scriptoutput -like "*$IP*")
 	{
 		Write-RichText -LogType 'Success' -LogMsg "Guest OS Network information successfully set."
 		Set-DNSInfo -VM $VM -LocalCredential $LocalCredential
@@ -1775,7 +1754,7 @@ Function Set-DNSInfo{
 								-ScriptType Powershell
 		
 	$DNSarray = $DNSString -split ','
-	$Results = $DNSarray | % { $Response -like "*$_*" }
+	$Results = $DNSarray | % { $Response.scriptoutput -like "*$_*" }
 	
 	If ($Results -contains $false)
 	{
@@ -1846,7 +1825,7 @@ Function Enable-Remoting{
 								-GuestCredential $LocalCredential `
 								-ScriptType Powershell
 	
-	$States = ([regex]::matches($Response, "(?:State[\s]+)(OFF)(?:[\s])"))
+	$States = ([regex]::matches($Response.scriptoutput, "(?:State[\s]+)(OFF)(?:[\s])"))
 	
 	If ($States.captures.count -eq 3)
 	{
@@ -1880,7 +1859,7 @@ Function Enable-Remoting{
 								-GuestCredential $LocalCredential `
 								-ScriptType Powershell
 	
-	If ($Response -like '***')
+	If ($Response.scriptoutput -like '***')
 	{
 		Write-RichText -LogType 'Success' -LogMsg 'Trusted Hosts set..'
 	}
