@@ -380,7 +380,7 @@ Function Populate-ESXClustersDropDown{
 		[String]$Location
 		
 	)
-	$ESXItems = @()
+	$Global:ESXItems = @()
 	$Clusters = Get-Cluster -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable ClustersError
 	$VMHosts = Get-VMHost -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable HostsError
 	#region Logging
@@ -408,17 +408,16 @@ Function Populate-ESXClustersDropDown{
 	Write-Richtext -LogType 'Success' -LogMsg "ESX Objects retrieved successfully."
 	
 	If ($Clusters){
-		$ESXItems += $Clusters
+		$Global:ESXItems += $Clusters
 	}
 	
 	If ($VMHosts){
-		$ESXItems += $VMHosts
+		$Global:ESXItems += $VMHosts
 	}
-	
-	$ESXClustersComboBox.DataSource = $ESXItems
-	$ESXClustersComboBox.selectedindex = -1
-	$ESXClustersComboBox.selectedindex = -1
 	$ESXClustersComboBox.DisplayMember = "Name"
+	$ESXClustersComboBox.DataSource = $Global:ESXItems
+	$ESXClustersComboBox.selectedindex = -1
+	$ESXClustersComboBox.selectedindex = -1
 	$ESXClustersComboBox.enabled = $True
 	
 }

@@ -2,5 +2,9 @@
   <Version>1.0</Version>
   <FileID>32aed7c1-e418-481f-9525-d997a49c9593</FileID>
   <OpenFolders />
-  <OpenFiles />
+  <OpenFiles>
+    <File>Globals.ps1</File>
+    <File>MainForm.psf</File>
+    <File>Startup.pss</File>
+  </OpenFiles>
 </ProjectState>
