@@ -350,9 +350,13 @@ Function Populate-LocalOfficeDropDown{
 		Write-Log -Message "------------------------------"
 	}
 	#endregion
-	Populate-ComboBox -Combobox $LocalOfficeSelectioncomboBox -Items $LocalOffices -Clear $true
+	$Global:DataCenterItems = @()
+	$Global:DataCenterItems += $LocalOffices
+	$LocalOfficeSelectioncomboBox.DisplayMember = "Name"
+	$LocalOfficeSelectioncomboBox.DataSource = $Global:DataCenterItems
+	$LocalOfficeSelectioncomboBox.selectedindex = -1
+	$LocalOfficeSelectioncomboBox.selectedindex = -1
 	$LocalOfficeSelectioncomboBox.enabled = $True
-	
 }
 
 Function Populate-ESXClustersDropDown{
@@ -1256,7 +1260,11 @@ Function Determine-Portgroup{
 		Default
 		{
 			Write-RichText -LogType 'informational' -LogMSG "More than one possible portgroup was matched. Please choose one."
-			Populate-ComboBox -Combobox $PortGroupcombobox -Items $TrimmedMatches.name
+			
+			$PortGroupcombobox.DisplayMember = "Name"
+			$PortGroupcombobox.DataSource = $TrimmedMatches
+			$PortGroupcombobox.selectedindex = -1
+			$PortGroupcombobox.selectedindex = -1
 			$PortGroupcombobox.enabled = $True
 		}
 	}
@@ -1286,7 +1294,7 @@ Function Set-VMPortGroup{
 		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
 		[VMware.VimAutomation.ViCore.Types.V1.Inventory.VirtualMachine]$VM,
 		[Parameter(Mandatory = $true, Position = 1, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-		[String]$PortGroup
+		$PortGroup
 	)
 	
 	Write-Richtext -LogType 'Informational' -LogMsg "Setting the Portgroup in Vsphere."
@@ -1295,7 +1303,7 @@ Function Set-VMPortGroup{
 	
 	$NewPortGroup = $VM | get-networkadapter | select -ExpandProperty NetWorkname
 	
-	If ($NewPortGroup -eq $PortGroup)
+	If ($NewPortGroup -eq $PortGroup.name)
 	{
 		Write-RichText -LogType 'Success' -LogMsg "Successfully Set PortGroup."
 		Start-VirtualMachine -VM $VM

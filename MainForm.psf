@@ -1318,7 +1318,7 @@ SCQSiUQikUgkEklT9X/8H/9//v+cl3slM8QAAAAASUVORK5CYII=</Preview>
         <Property name="Name">PortGroupComboBox</Property>
         <Property name="Size">315, 25</Property>
         <Property name="TabIndex">77</Property>
-        <Event name="SelectedIndexChanged">PortGroupComboBox_SelectedIndexChanged</Event>
+        <Event name="SelectionChangeCommitted">PortGroupComboBox_SelectionChangeCommitted</Event>
       </Object>
       <Object type="System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" name="octet4Textbox" children="Controls">
         <Property name="Enabled">False</Property>
@@ -2127,8 +2127,8 @@ $VCenterComboBox_SelectionChangeCommitted = {
 #Called when user selects a local office / datacenter.
 $LocalOfficeSelectionComboBox_SelectionChangeCommitted = {
 	$LocalOfficeSelectionComboBox.DroppedDown = $False
-	$Global:Location = $($LocalOfficeSelectionComboBox.SelectedItem)
-	Write-Log -Message "LOCATION : $Global:Location"
+	$Global:Location = $LocalOfficeSelectionComboBox.SelectedItem.name
+	Write-Log -Message "LOCATION : $($Global:Location)"
 	Write-RichText -LogType 'Informational' -LogMsg "Retrieving ESX Clusters please be patient."
 	Populate-ESXClustersDropDown -Server $Global:VCenterServer -Location $Global:Location
 	
@@ -2287,7 +2287,8 @@ $ExtraDriveCounter_ValueChanged={
 }
 
 #Called when user selects a Portgroup.
-$PortGroupComboBox_SelectedIndexChanged = {
+$PortGroupComboBox_SelectionChangeCommitted = {
+	$PortGroupComboBox.DroppedDown = $False
 	Set-VMPortGroup -VM $Global:VM -PortGroup $PortGroupComboBox.SelectedItem
 }
 
