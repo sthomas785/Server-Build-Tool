@@ -3,18 +3,6 @@
 #--------------------------------------------
 
 #region Global Variables
-$Global:VMCreationSelections = New-Object –TypeName PSObject
-$Global:VCenterServer = ""
-$Global:Location = ""
-$Global:ResourcePool = ""
-$Global:VMName = ""
-$Global:Datastore = ""
-$Global:Template = ""
-$Global:OSCustomizationSpec = ""
-$Global:VM = ""
-$Global:FullIP = ""
-$Global:LocalAdminCreds = ""
-$Global:FolderObject = ""
 
 $Global:Testing = $true
 $LogFilePath = "c:\Temp\serverBuild-$(Get-date -Format "dd-MM-yyyy").txt"
@@ -1255,7 +1243,7 @@ Function Determine-Portgroup{
 		1 {
 			Write-RichText -LogType 'Success' -LogMSG "Found only one matching portgroup."
 			$Portgroup = $TrimmedMatches
-			Set-VMPortGroup -VM $VM -PortGroup $Portgroup.name
+			Set-VMPortGroup -VM $VM -PortGroup $Portgroup
 		}
 		Default
 		{
