@@ -11,7 +11,7 @@ $LogFilePath = "c:\Temp\serverBuild-$(Get-date -Format "dd-MM-yyyy").txt"
 
 #endregion
 
-function Connect-Mstsc{
+Function Connect-Mstsc{
 <#   
 .SYNOPSIS   
 Function to connect an RDP session without the password prompt
@@ -223,29 +223,6 @@ An remote desktop session to server01 will be created using the credentials of c
 	}
 }
 
-Function Populate-ComboBox{
-	Param
-	(
-		[System.Windows.Forms.ComboBox]$Combobox,
-		[Array]$Items,
-		[Bool]$Clear
-	)
-	
-	If ($Clear)
-	{
-		$Combobox.Items.clear()
-	}
-	
-	Foreach ($Item in $Items)
-	{
-		
-		$Combobox.Items.Add($item)
-	}
-	
-	$Combobox.enabled = $True
-	
-}
-
 Function ConnectTo-VCenter{
 <#
 	.SYNOPSIS
@@ -282,10 +259,10 @@ Function ConnectTo-VCenter{
 	Catch
 	{
 		Write-Richtext -LogType 'Error' -LogMsg "Unable to connect to $Server : $($Error[0])"
-		return;
+		Return $False
 	}
 	Write-Richtext -LogType 'Success' -LogMsg "Connected to $Server."
-	Populate-LocalOfficeDropDown -Server $Server
+	Return $true
 	
 }
 
@@ -440,7 +417,8 @@ Function Populate-DatastoreClusterDropDown{
 	
 	param
 	(
-		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+		[Parameter(Mandatory = $true, Position = 0)]
+		[ValidateScript({ $_ -is [VMware.VimAutomation.ViCore.Impl.V1.Inventory.ComputeResourceImpl] -or $_ -is [VMware.VimAutomation.ViCore.Impl.V1.Inventory.InventoryItemImpl]})]
 		$ResourcePool
 	)
 	$Datastoreitems = @()
