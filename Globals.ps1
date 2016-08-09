@@ -305,16 +305,7 @@ Function Populate-LocalOfficeDropDown{
 	}
 	
 	Write-Richtext -LogType 'Success' -LogMsg "Local Offices retrieved successfully."
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of Local Offices:"
-		Foreach ($Office in $LocalOffices){ Write-Log -Message $Office }
-		Write-Log -Message "End List of Local Offices."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
+	
 	$Global:DataCenterItems = @()
 	$Global:DataCenterItems += $LocalOffices
 	$LocalOfficeSelectioncomboBox.DisplayMember = "Name"
@@ -333,13 +324,17 @@ Function Populate-ESXClustersDropDown{
 		Function connects to vcenter and retrieves both a list of available clusters
 		and a list of single hosts. Populates the combobox with both, clusters first.
 	
+	.PARAM Server
+		The VCenter Server Selected by the user.
+	
+	.PARAM Location
+		The location Selected by the user.
+	
 	.EXAMPLE
 		PS C:\> Populate-ESXClustersDropDown
 	
 	.NOTES
-		$Erroractionpreference is toggled because i couldn't find a better way to handle the
-		errors thrown when either clusters or hosts were not available. Try/Catch didn't work
-		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
+		N/A
 #>
 	
 	param (
@@ -352,20 +347,7 @@ Function Populate-ESXClustersDropDown{
 	$Global:ESXItems = @()
 	$Clusters = Get-Cluster -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable ClustersError
 	$VMHosts = Get-VMHost -Server $Server -location $Location -ErrorAction SilentlyContinue -ErrorVariable HostsError
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of ESX Clusters:"
-		Foreach ($Cluster in $Clusters) { Write-Log -Message $Cluster.name }
-		Write-Log -Message "End List of ESX Clusters."
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of ESX Hosts:"
-		Foreach ($Item in $VMHosts) { Write-Log -Message $item.name }
-		Write-Log -Message "End List of ESX Hosts."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
+
 	If ($ClustersError -and $HostsError)
 	{
 		Write-Richtext -LogType 'Error' -LogMsg "Unable to Gather ESX Hosts and Clusters."
@@ -403,16 +385,13 @@ Function Populate-DatastoreClusterDropDown{
 	.EXAMPLE
 		PS C:\> Populate-DatastoreClusterDropDown
 	
+	.Param ResourcePool
+		
+	
 	.NOTES
 		This was a decent amount of work to get right. Have to first get the ESX Clusters then 
 		get the datastores that belong to those. Then get the datastore clusters that belong to them.
 	
-		There is about a 90% chance i could do this in a more efficient way. Will check on this later.
-		[#TODO]
-	
-		$Erroractionpreference is toggled because i couldn't find a better way to handle the
-		errors thrown when either clusters or hosts were not available. Try/Catch didn't work
-		how i wanted it to. I should maybe come back to this to make it cleaner later [#TODO]
 #>
 	
 	param
@@ -424,21 +403,6 @@ Function Populate-DatastoreClusterDropDown{
 	$Datastoreitems = @()
 	$DataStores = $ResourcePool | Get-Datastore -ErrorAction SilentlyContinue -ErrorVariable DataStoreErrors
 	$DataStoreClusters = $DataStores | Get-DatastoreCluster -ErrorAction SilentlyContinue -ErrorVariable DataStoreClustersErrors
-	
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of DataStore Clusters:"
-		Foreach ($Cluster in $DataStoreClusters) { Write-Log -Message $Cluster.name }
-		Write-Log -Message "End List of DataStore Clusters."
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of Datastores:"
-		Foreach ($DataStore in $DataStores) { Write-Log -Message $DataStore.name }
-		Write-Log -Message "End List of Datastores."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
 	
 	If ($DataStoreClustersErrors -and $DataStoresErrors)
 	{
@@ -502,16 +466,6 @@ Function Populate-TemplateDropDown{
 	}
 	
 	Write-Richtext -LogType 'Success' -LogMsg "Templates retrieved from $Server."
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of Templates:"
-		Foreach ($Template in $Templates) { Write-Log -Message $Template }
-		Write-Log -Message "End List of Templates."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
 	
 	$TemplateSelectionComboBox.DataSource = $Templates
 	$TemplateSelectionComboBox.selectedindex = -1
@@ -553,16 +507,6 @@ Function Populate-CustomizationDropDown{
 	}
 	
 	Write-Richtext -LogType 'Success' -LogMsg "Customizations retrieved successfully."
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of Customizations:"
-		Foreach ($Customization in $Customizations) { Write-Log -Message $Customization.name }
-		Write-Log -Message "End List of Customizations."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
 	
 	$CustomizationSelectioncomboBox.DataSource = $Customizations
 	$CustomizationSelectioncomboBox.selectedindex = -1
@@ -890,17 +834,6 @@ Function Enable-HardwareGroupBox{
 	$ExtraDriveCounter.Enabled = $True
 }
 
-Function AddTo-ResourcePool{
-	$rp="Prod-Cluster05-Build"
-	$norp = Get-Cluster $Cluster | Get-VM | where { $_.ResourcePool.Name -eq "Resources" }
-	foreach ($i in $norp)
-	{
-		Write-Host "Moving $i to Resource Pool $rp"
-		Get-VM $i -Location $cluster | Move-VM -Destination $rp | Out-Null
-		Write-Host "Move completed"
-	}
-}
-
 Function Create-VM{
 <#
 	.SYNOPSIS
@@ -1176,16 +1109,6 @@ Function Determine-Portgroup{
 	Foreach ($VSwitch in $VirtualSwitches)
 	{
 		$Portgroups += ($Vswitch | Get-VirtualPortGroup)
-		#region Logging
-		If ($Global:Testing)
-		{
-			Write-Log -Message "------------------------------"
-			Write-Log -Message "Begin List of Portgroups:"
-			Foreach ($portgroup in $Portgroups) { Write-Log -Message $portgroup.name }
-			Write-Log -Message "End List of Portgroups."
-			Write-Log -Message "------------------------------"
-		}
-		#endregion
 	}
 	
 	If ($Location -in ('AM1', 'AP1', 'EM1'))
@@ -1200,23 +1123,17 @@ Function Determine-Portgroup{
 	
 	$PortgroupCount = ($TrimmedMatches | measure-object).count
 	
-	#region Logging
-	If ($Global:Testing)
-	{
-		Write-Log -Message "------------------------------"
-		Write-Log -Message "Begin List of Trimmed matches:"
-		Foreach ($item in $TrimmedMatches) { Write-Log -Message $Item.name }
-		Write-Log -Message "End List of Trimmed Matches."
-		Write-Log -Message "------------------------------"
-	}
-	#endregion
-	
 	switch ($PortgroupCount)
 	{
 		
 		0 {
-			Write-RichText -LogType 'Error' -LogMSG "Unable to find a matching portgroup."
-			Return
+			Write-RichText -LogType 'Error' -LogMSG "Unable to find a matching portgroup. Please choose one from the dropdown."
+			
+			$PortGroupcombobox.DisplayMember = "Name"
+			$PortGroupcombobox.DataSource = $Portgroups
+			$PortGroupcombobox.selectedindex = -1
+			$PortGroupcombobox.selectedindex = -1
+			$PortGroupcombobox.enabled = $True
 		}
 		1 {
 			Write-RichText -LogType 'Success' -LogMSG "Found only one matching portgroup."
@@ -2855,4 +2772,3 @@ Function Write-Log{
 	
 	add-content -path $LogFilePath -value ($Message)
 }
-
